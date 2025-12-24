@@ -2,6 +2,7 @@ import { Admin } from "../model/Admin.model.js";
 import { Member } from "../model/Member.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { generateMemberId } from "../utils/generateMemberId.js";
 
 export const adminLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -25,29 +26,37 @@ export const adminLogin = async (req, res) => {
   res.json({
     message: "Login successful",
     token,
-    role: admin.role
+    role: admin.role,
   });
 };
 
-
-
 export const registerMember = async (req, res) => {
-  const { name, phone, email } = req.body;
+  try {
+    const { name, phone, email } = req.body;
 
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const exists = await Member.findOne({ email });
+    if (exists) {
+      return res.status(400).json({ message: "Member already exists" });
+    }
 
-  const member = await Member.create({
-    name,
-    phone,
-    email,
-    otp,
-    status: "pending",
-  });
+    const { memberNumber, memberId } = await generateMemberId();
 
-  res.json({
-    message: "Member registered, OTP sent",
-    memberId: member._id,
-  });
+    const member = await Member.create({
+      name,
+      phone,
+      email,
+      memberNumber,
+      memberId
+    });
+
+    res.json({
+      message: "Member registered successfully",
+      member
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // LIST MEMBERS
@@ -56,30 +65,22 @@ export const getMembers = async (req, res) => {
   res.json(members);
 };
 
-export const approveMember = async (req, res) => {
-  const member = await Member.findById(req.params.id);
 
-  if (!member) {
-    return res.status(404).json({ message: "Member not found" });
+export const deleteMember = async (req, res) => {
+  try {
+    const member = await Member.findByIdAndDelete(req.params.id);
+
+    if (!member) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+
+    res.json({
+      message: "Member removed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message , erroe :error.message});
   }
-
-  if (member.status === "active") {
-    return res.status(400).json({ message: "Member already approved" });
-  }
-
-  const memberId = `ID-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-
-  member.status = "active";
-  member.memberId = memberId;
-
-  await member.save();
-
-  res.json({
-    message: "Member approved & ID card created",
-    member
-  });
 };
-
 
 // REJECT MEMBER
 export const rejectMember = async (req, res) => {
@@ -121,19 +122,11 @@ export const promoteMemberToSubAdmin = async (req, res) => {
     email: member.email,
     password: hashedPassword,
     role: "sub_admin",
-    createdBy: req.adminId
+    createdBy: req.adminId,
   });
 
   res.json({
     message: "Member promoted to Sub Admin",
-    subAdmin
+    subAdmin,
   });
 };
-
-
-
-// const bcrypt = require("bcrypt");
-
-// bcrypt.hash("Rahul123", 10).then(hash => {
-//   console.log(hash);
-// });

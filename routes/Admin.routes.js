@@ -2,10 +2,10 @@ import express from "express";
 import {
   adminLogin,
   getMembers,
-  approveMember,
   rejectMember,
   registerMember,
   promoteMemberToSubAdmin,
+  deleteMember
 } from "../controller/Admin.controller.js";
 
 import { adminAuth } from "../middleware/adminAuth.js";
@@ -13,30 +13,25 @@ import { allowRoles } from "../middleware/checkRole.js";
 
 const router = express.Router();
 
-// LOGIN
+/* ================= ADMIN AUTH ================= */
+
+// Admin login
 router.post("/login", adminLogin);
 
-// Admin.routes.js
+/* ================= MEMBER ================= */
 
+// Member register (PUBLIC)
+router.post("/member/register", registerMember);
 
-// GET MEMBERS LIST
-// GET MEMBERS LIST
+// Get all members (Admin & Sub Admin)
 router.get(
   "/members",
   adminAuth,
   allowRoles("admin", "sub_admin"),
   getMembers
 );
-router.post("/register", registerMember);
-// APPROVE MEMBER (ONLY ADMIN)
-router.patch(
-  "/member/:id/approve",
-  adminAuth,
-  allowRoles("admin"),
-  approveMember
-);
 
-// REJECT MEMBER (ONLY ADMIN)
+// Reject member (Admin only)
 router.patch(
   "/member/:id/reject",
   adminAuth,
@@ -44,6 +39,7 @@ router.patch(
   rejectMember
 );
 
+// Promote member to Sub Admin (Admin only)
 router.patch(
   "/member/:id/promote",
   adminAuth,
@@ -51,5 +47,12 @@ router.patch(
   promoteMemberToSubAdmin
 );
 
+// Delete member (Admin only)
+router.delete(
+  "/member/:id",
+  adminAuth,
+  allowRoles("admin"),
+  deleteMember
+);
 
 export default router;
