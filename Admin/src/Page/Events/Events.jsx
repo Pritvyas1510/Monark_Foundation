@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const Events = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   // ✅ MISSING STATE
   const [formData, setFormData] = useState({
@@ -35,7 +36,6 @@ const Events = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ VALIDATION
     if (!formData.image) {
       toast.error("Please upload image or video");
       return;
@@ -48,14 +48,19 @@ const Events = () => {
     fd.append("time", formData.time);
     fd.append("location", formData.location);
     fd.append("organizedBy", formData.organizedBy);
-    fd.append("media", formData.image); // 🔑 backend expects "media"
+    fd.append("media", formData.image);
 
     try {
+      setLoading(true); // 🔥 start spinner
+
       await dispatch(createEvent(fd)).unwrap();
+
       toast.success("Event created successfully");
       navigate("/eventhome");
     } catch (err) {
       toast.error(err || "Event creation failed");
+    } finally {
+      setLoading(false); // 🔥 stop spinner
     }
   };
 
@@ -157,9 +162,15 @@ const Events = () => {
           {/* SUBMIT */}
           <button
             type="submit"
-            className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold"
+            disabled={loading}
+            className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg font-semibold text-white
+    ${loading ? "bg-orange-400 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"}`}
           >
-            Create Event
+            {loading && (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            )}
+
+            {loading ? "Creating Event..." : "Create Event"}
           </button>
         </form>
       </div>

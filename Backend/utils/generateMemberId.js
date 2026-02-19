@@ -1,21 +1,36 @@
-import { Member } from "../model/Member.model.js";
+// import Member from "../model/Member.model.js";
+
+// export const generateMemberId = async () => {
+//   const lastMember = await Member.findOne({})
+//     .sort({ createdAt: -1 })
+//     .select("membershipId");
+
+//   let nextNumber = 1;
+
+//   if (lastMember?.membershipId) {
+//     const lastNumber = parseInt(
+//       lastMember.membershipId.replace("MF", ""),
+//       10
+//     );
+//     nextNumber = lastNumber + 1;
+//   }
+
+//   return `MF${String(nextNumber).padStart(7, "0")}`;
+// };
+
+import Member from "../model/Member.model.js";
 
 export const generateMemberId = async () => {
-  // Find last member (sorted by createdAt or memberId)
   const lastMember = await Member.findOne({})
-    .sort({ createdAt: -1 })
-    .select("memberId");
+    .sort({ membershipId: -1 })   // 🔥 important change
+    .select("membershipId");
 
   let nextNumber = 1;
 
-  if (lastMember && lastMember.memberId) {
-    // Extract numeric part from MF0000001
-    const lastNumber = parseInt(lastMember.memberId.replace("MF", ""), 10);
-    nextNumber = lastNumber + 1;
+  if (lastMember?.membershipId) {
+    nextNumber =
+      parseInt(lastMember.membershipId.replace("MF", ""), 10) + 1;
   }
 
-  // Pad number with zeros → 7 digits
-  const paddedNumber = String(nextNumber).padStart(7, "0");
-
-  return `MF${paddedNumber}`;
+  return `MF${String(nextNumber).padStart(7, "0")}`;
 };

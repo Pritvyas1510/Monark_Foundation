@@ -17,10 +17,10 @@ export const registerMember = createAsyncThunk(
       return res.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Registration failed"
+        error.response?.data?.message || "Registration failed",
       );
     }
-  }
+  },
 );
 
 const registerSlice = createSlice({
@@ -54,7 +54,7 @@ const registerSlice = createSlice({
       .addCase(registerMember.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.member = action.payload.member;
+        state.member = action.payload.member; // backend returns member directly
       })
 
       // API failed

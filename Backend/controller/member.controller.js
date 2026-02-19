@@ -1,69 +1,127 @@
-import { Member } from "../model/Member.model.js";
+import Member from "../model/Member.model.js";
 import { generateMemberId } from "../utils/generateMemberId.js";
 
+/* ===================== REGISTER ===================== */
 export const registerMember = async (req, res) => {
   try {
-    const {
-      name,
-      phone,
-      email,
-      gender,
-      city,
-      region,
-      interestedInHead,
-    } = req.body;
+    const data = { ...req.body };
 
-    const exists = await Member.findOne({ phone });
+    // Check duplicate phone
+    const exists = await Member.findOne({ phone: data.phone });
     if (exists) {
       return res.status(400).json({ message: "Member already exists" });
     }
 
-    // Generate sequential ID
-    const memberId = await generateMemberId();
+    // Boolean
+    if (data.interestedInHead !== undefined) {
+      data.interestedInHead =
+        data.interestedInHead === "true" || data.interestedInHead === true;
+    }
 
-    const member = await Member.create({
-      name,
-      phone,
-      email,
-      gender,
-      city,
-      region,
-      interestedInHead,
-      memberId,
-      photoUrl: req.file?.path, // ✅ Cloudinary URL
-      status: "active",
-    });
+    // Date
+    if (data.dob) {
+      data.dob = new Date(data.dob);
+    }
+
+    // Language always array
+    if (data.language && !Array.isArray(data.language)) {
+      data.language = [data.language];
+    }
+
+    // Photo
+    if (req.file?.path) {
+      data.photoUrl = req.file.path;
+    }
+
+    // Generate ID (ONLY here)
+    data.membershipId = await generateMemberId();
+
+    const member = await Member.create(data);
 
     res.status(201).json({
       message: "Member registered successfully",
       member,
     });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({
+        message: "Duplicate membership ID — please retry",
+      });
+    }
+
+    res.status(500).json({ message: err.message });
   }
 };
 
-// GET ALL MEMBERS
-export const getMembers = async (req, res) => {
+/* ===================== GET ALL ===================== */
+export const getAllMembers = async (req, res) => {
   const members = await Member.find().sort({ createdAt: -1 });
   res.json(members);
 };
 
-// DELETE MEMBER
-export const deleteMember = async (req, res) => {
-  const member = await Member.findByIdAndDelete(req.params.id);
-  if (!member) {
-    return res.status(404).json({ message: "Member not found" });
-  }
-  res.json({ message: "Member deleted successfully" });
+/* ===================== FIND BY PHONE ===================== */
+export const getMemberByPhone = async (req, res) => {
+  const member = await Member.findOne({ phone: req.params.phone });
+
+  if (!member) return res.status(404).json({ message: "Member not found" });
+
+  res.json(member);
 };
 
-// REJECT MEMBER
-export const rejectMember = async (req, res) => {
-  const member = await Member.findByIdAndUpdate(
-    req.params.id,
-    { status: "rejected" },
-    { new: true }
-  );
-  res.json({ message: "Member rejected", member });
+/* ===================== UPDATE ===================== */
+export const updateMember = async (req, res) => {
+  try {
+    const updateData = { ...req.body };
+
+    if (updateData.dob) {
+      updateData.dob = new Date(updateData.dob);
+    }
+
+    if (updateData.interestedInHead !== undefined) {
+      updateData.interestedInHead =
+        updateData.interestedInHead === "true" ||
+        updateData.interestedInHead === true;
+    }
+
+    if (req.file) {
+      updateData.photoUrl = req.file.path;
+    }
+
+    const member = await Member.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.json(member);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const deleteMember = async (req, res) => {
+  try {
+    // 🛡 Only super admin can delete
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Only Super Admin can delete members",
+      });
+    }
+
+    const member = await Member.findById(req.params.id);
+
+    if (!member) return res.status(404).json({ message: "Member not found" });
+
+    // 🚫 Protect Sub-Admins
+    if (member.isHead === true) {
+      return res.status(400).json({
+        message: "Cannot delete Sub-Admin. Demote first.",
+      });
+    }
+
+    await Member.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "Member deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };

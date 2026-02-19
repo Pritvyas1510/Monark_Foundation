@@ -1,26 +1,46 @@
-import React from "react";
-import Navbar from "./components/Navbr";
-import Home from "./Page/Home/Home";
-import Footer from "./components/Footer";
-import { Toaster } from "react-hot-toast";
+import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import Register from "./Page/Register/Register";
-import EditRegistration from "./Page/Register/Components/EditRegistration";
+import { Toaster } from "react-hot-toast";
+
+import Navbar from "./components/Navbr";
+import Footer from "./components/Footer";
+import FullPageLoader from "./components/LoaderFull";
+import Evenet from "./Page/Event/Evenet";
+import ScrollToTop from "./components/ScrollToTop";
+import AboutUs from "./Page/AboutUs/AboutUs";
+import NotFound from "./components/NotFound";
+
+// Lazy load pages
+const Home = lazy(() => import("./Page/Home/Home"));
+const Register = lazy(() => import("./Page/Register/Register"));
+const EditRegistration = lazy(() =>
+  import("./Page/Register/Components/EditRegistration")
+);
 
 const App = () => {
   return (
-    <div>
-       <Toaster position="bottom-right" />
-      <Navbar />
-      <Routes>
+    <>
+    <ScrollToTop/>
+      <Toaster position="bottom-right" />
 
-        <Route path="/" element={<Home/>} />
-        <Route path="/register" element={<Register/>}/>
-        <Route path="/editdetails" element={<EditRegistration/>}/>
-        
-      </Routes>
-      <Footer/>
-    </div>
+      <Navbar />
+
+      {/* 🚀 Lazy loading wrapper */}
+      <Suspense fallback={<FullPageLoader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/editdetails" element={<EditRegistration />} />
+          <Route path="/event" element={<Evenet/>}/>
+          <Route path="/about" element={<AboutUs/>}/>
+
+          {/* Not Found Page*/}
+          <Route path="*" element={<NotFound/>}/>
+        </Routes>
+      </Suspense>
+
+      <Footer />
+    </>
   );
 };
 

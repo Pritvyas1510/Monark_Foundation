@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../Api/Api";
+import api from "../../api/api";
 
 /* =======================
    CREATE EVENT
@@ -28,12 +28,15 @@ export const fetchEvents = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.get("/event");
-      return res.data;
+
+      // IMPORTANT FIX 👇
+      return res.data.events || res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
     }
   }
 );
+
 
 /* =======================
    DELETE EVENT

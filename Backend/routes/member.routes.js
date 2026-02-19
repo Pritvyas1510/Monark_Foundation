@@ -1,58 +1,28 @@
 import express from "express";
+import upload from "../middleware/uploadMemberImage.js";
+
 import {
   registerMember,
-  getMembers,
+  getAllMembers,
+  getMemberByPhone,
+  updateMember,
   deleteMember,
-  rejectMember,
 } from "../controller/member.controller.js";
-
-import upload from "../middleware/uploadMemberImage.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { allowRoles } from "../middleware/checkRole.js";
 
 const router = express.Router();
 
-/**
- * ✅ PUBLIC MEMBER REGISTRATION
- * No token required
- */
-router.post(
-  "/register",
-  upload.single("photo"),
-  registerMember
-);
+// router.post("/memberCreate", upload.single("photo"), registerMember);
+// router.post("/memberCreate", registerMember);
+router.post("/register", (req,res,next)=>{
+  next();
+}, upload.single("photo"), registerMember);
 
-/**
- * 🔒 LIST MEMBERS
- * Admin & Sub-admin
- */
-router.get(
-  "/",
-  adminAuth,
-  allowRoles("admin", "sub_admin"),
-  getMembers
-);
+router.get("/", getAllMembers);
 
-/**
- * 🔒 DELETE MEMBER
- * Admin only
- */
-router.delete(
-  "/:id",
-  adminAuth,
-  allowRoles("admin"),
-  deleteMember
-);
+router.get("/phone/:phone", getMemberByPhone);
 
-/**
- * 🔒 REJECT MEMBER
- * Admin only
- */
-router.patch(
-  "/reject/:id",
-  adminAuth,
-  allowRoles("admin"),
-  rejectMember
-);
+router.put("/:id", upload.single("photo"), updateMember);
+
+router.delete("/:id", deleteMember);
 
 export default router;

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../Api/Api";
 
-// LOGIN API CALL
+// ADMIN LOGIN
 export const adminLogin = createAsyncThunk(
   "auth/adminLogin",
   async (data, { rejectWithValue }) => {
@@ -9,9 +9,11 @@ export const adminLogin = createAsyncThunk(
       const res = await api.post("/admin/login", data);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Login failed");
+      return rejectWithValue(
+        err.response?.data?.message || "Login failed"
+      );
     }
-  },
+  }
 );
 
 const loginSlice = createSlice({
@@ -20,8 +22,7 @@ const loginSlice = createSlice({
     loading: false,
     token: localStorage.getItem("token") || null,
     role: null,
-    name: localStorage.getItem("name") || null, // ✅
-    lastLogin: null,
+    name: localStorage.getItem("name") || null,
     lastLogin: null,
     error: null,
   },
@@ -30,6 +31,7 @@ const loginSlice = createSlice({
       state.token = null;
       state.role = null;
       state.name = null;
+      state.lastLogin = null;
       localStorage.removeItem("token");
       localStorage.removeItem("name");
     },
@@ -44,13 +46,12 @@ const loginSlice = createSlice({
         state.loading = false;
         state.token = action.payload.token;
         state.role = action.payload.role;
-        state.name = action.payload.name; // ✅
+        state.name = action.payload.name;
         state.lastLogin = action.payload.lastLogin;
 
         localStorage.setItem("token", action.payload.token);
-        localStorage.setItem("name", action.payload.name); // ✅
+        localStorage.setItem("name", action.payload.name);
       })
-
       .addCase(adminLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

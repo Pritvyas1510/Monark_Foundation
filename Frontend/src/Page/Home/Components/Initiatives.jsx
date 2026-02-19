@@ -2,10 +2,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProjectCard from "../../../components/ProjectCard";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { LiaArrowRightSolid } from "react-icons/lia";
 import { fetchEvents } from "../../../Redux/slice/Events.slice";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
+import { LiaArrowRightSolid, LiaAngleLeftSolid, LiaAngleRightSolid } from "react-icons/lia";
 
 const Initiatives = () => {
   const dispatch = useDispatch();
@@ -15,116 +14,163 @@ const Initiatives = () => {
     dispatch(fetchEvents());
   }, [dispatch]);
 
-  /* ---------- Desktop Pagination ---------- */
-  const itemsPerPage = 3;
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(events.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const visibleProjects = events.slice(startIndex, startIndex + itemsPerPage);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [cardsPerView, setCardsPerView] = useState(3);
 
-  /* ---------- Mobile Slider ---------- */
-  const [mobileIndex, setMobileIndex] = useState(0);
+  // Determine how many cards to show based on screen width
+  useEffect(() => {
+    const updateCardsPerView = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) return 3;
+      if (width >= 640) return 2;
+      return 1;
+    };
+
+    const handleResize = () => {
+      const newValue = updateCardsPerView();
+      setCardsPerView(newValue);
+      // Reset to first page when layout changes significantly
+      setCurrentSlide(0);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // initial call
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Auto-play only on mobile (1 card visible)
+  useEffect(() => {
+    if (cardsPerView !== 1 || loading || events.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [cardsPerView, events.length, loading]);
+
+  const totalItems = loading ? 6 : events.length;
+  const totalSlides = Math.ceil(totalItems / cardsPerView);
+
+  const canGoPrev = currentSlide > 0;
+  const canGoNext = currentSlide < totalSlides - 1;
+
+  const goToSlide = (index) => {
+    if (index >= 0 && index < totalSlides) {
+      setCurrentSlide(index);
+    }
+  };
+
+  const translatePercent = -currentSlide * 100;
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white text-black overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Heading */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-5">
           <div>
-            <h2 className="text-orange-600 text-sm font-bold uppercase tracking-widest mb-3">
+            <h2 className="text-orange-600 text-sm font-bold text-[10px] uppercase tracking-widest mb-3">
               From Vision to Reality
             </h2>
-            <h3 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h3 className="text-2xl md:text-2xl font-bold text-gray-900">
               Initiatives we proudly completed
             </h3>
           </div>
 
-          <a className="hidden md:flex cursor-pointer items-center gap-2 text-orange-600 font-bold">
-            <Link to="/event" className="flex gap-1"> View all projects <LiaArrowRightSolid size={22} className="mt-1" /></Link>
-          </a>
+          <Link
+            to="/event"
+            className="hidden md:flex text-[15px] items-center gap-1 text-orange-600 font-bold hover:underline"
+          >
+            View all projects <LiaArrowRightSolid size={22} />
+          </Link>
         </div>
 
-        {/* ================= Desktop Grid ================= */}
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-8">
-          {loading
-            ? Array.from({ length: 3 }).map((_, i) => (
-                <ProjectCard key={i} loading />
-              ))
-            : visibleProjects.map((event) => (
-                <ProjectCard
-                  key={event._id}
-                  mediaUrl={event.mediaUrl}
-                  mediaType={event.mediaType}
-                  title={event.title}
-                  description={event.description}
-                  city={event.location}
-                  date={event.date}
-                  category={event.organizedBy}
-                />
-              ))}
+        {/* ===== Unified Slider ===== */}
+        <div className="relative overflow-hidden">
+          <div
+            className="
+              flex will-change-transform
+              transition-transform duration-700 ease-out
+            "
+            style={{ transform: `translateX(${translatePercent}%)` }}
+          >
+            {(loading ? Array.from({ length: totalItems }) : events).map((item, idx) => (
+              <div
+                key={loading ? `skeleton-${idx}` : (item._id || idx)}
+                className="min-w-full sm:min-w-1/2 lg:min-w-1/3 px-3"
+              >
+                {loading ? (
+                  <ProjectCard loading />
+                ) : (
+                  <ProjectCard
+                    mediaUrl={item.mediaUrl}
+                    mediaType={item.mediaType}
+                    title={item.title}
+                    description={item.description}
+                    city={item.location}
+                    date={item.date}
+                    category={item.organizedBy}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* ================= Pagination ================= */}
-        {totalPages > 1 && (
-          <div className="hidden md:flex mt-12 justify-center items-center gap-4">
+        {/* ===== Navigation – same on all devices ===== */}
+        {totalSlides > 1 && (
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mt-10  flex-wrap">
             <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-              className="p-3 rounded-full bg-gray-100"
+              onClick={() => goToSlide(currentSlide - 1)}
+              disabled={!canGoPrev}
+              aria-label="Previous slide"
+              className={`
+                flex h-11 text-[8px] w-11 items-center justify-center rounded-full transition-all
+                ${
+                  canGoPrev
+                    ? "bg-orange-100 text-orange-700 hover:bg-orange-200 active:scale-95"
+                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                }
+              `}
             >
-              <FaChevronLeft />
+              <LiaAngleLeftSolid size={22} />
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {Array.from({ length: totalSlides }).map((_, i) => (
               <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`w-10 h-10 rounded-full ${
-                  currentPage === page
-                    ? "bg-orange-600 text-white"
-                    : "bg-gray-100"
-                }`}
+                key={i}
+                onClick={() => goToSlide(i)}
+                className={`
+                  h-11 w-11 text-[15px] rounded-full text-sm font-semibold transition-all
+                  ${
+                    currentSlide === i
+                      ? "bg-orange-600 text-white shadow-md scale-105"
+                      : "bg-orange-50 text-orange-800 hover:bg-orange-100 hover:scale-105 active:scale-95"
+                  }
+                `}
               >
-                {page}
+                {i + 1}
               </button>
             ))}
 
             <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="p-3 rounded-full bg-gray-100"
+              onClick={() => goToSlide(currentSlide + 1)}
+              disabled={!canGoNext}
+              aria-label="Next slide"
+              className={`
+                flex h-11 w-11 text-[10px] items-center justify-center rounded-full transition-all
+                ${
+                  canGoNext
+                    ? "bg-orange-100 text-orange-700 hover:bg-orange-200 active:scale-95"
+                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                }
+              `}
             >
-              <FaChevronRight />
+              <LiaAngleRightSolid size={22} />
             </button>
           </div>
         )}
-
-        {/* ================= Mobile Slider ================= */}
-        <div className="md:hidden mt-8">
-          <div className="overflow-hidden">
-            <div
-              className="flex transition-transform duration-500"
-              style={{ transform: `translateX(-${mobileIndex * 100}%)` }}
-            >
-              {loading
-                ? Array.from({ length: 3 }).map((_, i) => (
-                    <ProjectCard key={i} loading />
-                  ))
-                : events.map((event) => (
-                    <ProjectCard
-                      key={event._id}
-                      mediaUrl={event.mediaUrl}
-                      mediaType={event.mediaType}
-                      title={event.title}
-                      description={event.description}
-                      city={event.location}
-                      date={event.date}
-                      category={event.organizedBy}
-                    />
-                  ))}
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

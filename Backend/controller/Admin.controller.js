@@ -1,8 +1,11 @@
 import { Admin } from "../model/Admin.model.js";
-import { Member } from "../model/Member.model.js";
+import Member from "../model/Member.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import formatDOBPassword from "../utils/formatDOBPassword.js"
 
+
+/* ===================== ADMIN LOGIN ===================== */
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -23,14 +26,8 @@ export const adminLogin = async (req, res) => {
     const token = jwt.sign(
       { id: admin._id, role: admin.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" },
+      { expiresIn: "1d" }
     );
-
-    const lastLoginIST = admin.lastlogin.toLocaleString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      dateStyle: "medium",
-      timeStyle: "medium",
-    });
 
     res.json({
       message: "Login successful",
@@ -38,67 +35,62 @@ export const adminLogin = async (req, res) => {
       role: admin.role,
       name: admin.name,
       email: admin.email,
-      lastLogin: lastLoginIST,
+      lastLogin: admin.lastlogin,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const makeSubAdmin = async (req, res) => {
   try {
-    if (req.role !== "admin") {
-      return res.status(403).json({
-        message: "Only Super Admin can promote member",
-      });
-    }
-
     const member = await Member.findById(req.params.id);
-    if (!member) {
+
+    if (!member)
       return res.status(404).json({ message: "Member not found" });
+
+    if (!member.dob)
+      return res.status(400).json({ message: "DOB missing for member" });
+
+    // 🔐 username
+    const username = member.email || `${member.phone}@monark.com`;
+
+    // ❗ prevent duplicate admin
+    const existingAdmin = await Admin.findOne({ email: username });
+    if (existingAdmin) {
+      return res.status(400).json({ message: "Admin already exists" });
     }
 
-    if (member.isHead) {
-      return res.status(400).json({
-        message: "Member already a Head / Sub-Admin",
-      });
-    }
+    // 📆 password from DOB
+    const rawPassword = formatDOBPassword(member.dob);
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
-    const exists = await Admin.findOne({ email: member.email });
-    if (exists) {
-      return res.status(400).json({
-        message: "Admin already exists",
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash("123456", 10);
-
-    const admin = await Admin.create({
+    // 👑 create admin
+    await Admin.create({
       name: member.name,
-      email: member.email,
+      email: username,
       password: hashedPassword,
       role: "sub_admin",
-      createdBy: req.adminId,
+      createdBy: req.user?.id || null,
     });
 
-    // ✅ GUARANTEED UPDATE
-    await Member.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: {
-          isHead: true,
-          headStatus: "approved",
-          interestedInHead: false,
-        },
+    // update member
+    member.isHead = true;
+    member.headStatus = "approved";
+    await member.save();
+
+    res.json({
+      message: "Sub Admin created successfully",
+      login: {
+        username,
+        password: rawPassword,
       },
-      { new: true },
-    );
-
-    res.status(201).json({
-      message: "Member promoted to Sub-Admin successfully",
-      admin,
     });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+
+  } catch (err) {
+    console.error("MAKE SUB ADMIN ERROR:", err);
+    res.status(500).json({ message: err.message });
   }
 };
+

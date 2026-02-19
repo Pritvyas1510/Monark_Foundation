@@ -8,11 +8,13 @@ import GetInvolved from './Components/GetInvolved'
 import FAQSection from './Components/FAQSection'
 import CTASection from './Components/CTASection'
 import BackToTop from './Components/BackToTop'
+import EventNotifyed from './Components/EventNotifyed'
 
 const Home = () => {
   return (
     <div>
         <Hero/>
+        <EventNotifyed/>
         <MissionSection/>
         <Initiatives/>
         <FeaturedStory/>

@@ -1,0 +1,23 @@
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-floatIn {
+  animation: floatIn 0.45s ease-out;
+}
+
+@keyframes pulseSoft {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-pulseSoft {
+  animation: pulseSoft 1.5s infinite;
+}

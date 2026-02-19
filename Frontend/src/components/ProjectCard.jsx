@@ -1,5 +1,5 @@
 // src/components/ProjectCard.jsx
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 const ProjectCard = ({
   mediaUrl,
@@ -13,116 +13,159 @@ const ProjectCard = ({
 }) => {
   const videoRef = useRef(null);
   const [playing, setPlaying] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
-  /* ---------- SKELETON ---------- */
+  const MAX_DESC_LENGTH = 110;
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (playing) {
+      video.play().catch(() => {}); // mute errors in some browsers
+    } else {
+      video.pause();
+    }
+  }, [playing]);
+
+  // Optional: reset video when it ends (loop is already set)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const onEnded = () => setPlaying(false);
+    video.addEventListener("ended", onEnded);
+    return () => video.removeEventListener("ended", onEnded);
+  }, []);
+
+  const playVideo = () => setPlaying(true);
+  const pauseVideo = () => setPlaying(false);
+
   if (loading) {
     return (
-      <article className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200 animate-pulse">
-        <div className="h-64 bg-gray-200" />
-        <div className="p-6 space-y-4">
-          <div className="h-5 bg-gray-200 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 rounded w-full" />
-          <div className="h-4 bg-gray-200 rounded w-5/6" />
-          <div className="h-4 bg-gray-200 rounded w-1/2 mt-4" />
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse h-full flex flex-col">
+        <div className="relative aspect-[4/3] bg-gray-200" />
+        <div className="p-5 flex-1 flex flex-col gap-3">
+          <div className="h-5 w-24 bg-gray-200 rounded" />
+          <div className="h-6 w-3/4 bg-gray-300 rounded" />
+          <div className="h-4 bg-gray-200 rounded" />
+          <div className="h-4 w-5/6 bg-gray-200 rounded mt-auto" />
         </div>
-      </article>
+      </div>
     );
   }
 
   const isVideo = mediaType === "video" && mediaUrl;
   const isImage = mediaType === "image" && mediaUrl;
 
-  const formattedDate =
-    date && !isNaN(new Date(date))
-      ? new Date(date).toLocaleDateString("en-IN")
-      : null;
+  const formattedDate = date
+    ? new Date(date).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : null;
 
-  /* ---------- VIDEO HANDLERS ---------- */
-  const playVideo = () => {
-    if (videoRef.current) {
-      videoRef.current.play();
-      setPlaying(true);
-    }
-  };
+  const descToShow =
+    showFullDescription || description.length <= MAX_DESC_LENGTH
+      ? description
+      : description.slice(0, MAX_DESC_LENGTH).trim() + "...";
 
-  const stopVideo = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-      setPlaying(false);
-    }
-  };
+  const showMoreBtn = description.length > MAX_DESC_LENGTH;
 
   return (
-    <article className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:shadow-orange-200 transition-all duration-300 border border-gray-200">
-      
-      {/* MEDIA */}
-      <div
-        className="relative h-64 overflow-hidden bg-gray-100"
-        onMouseEnter={isVideo ? playVideo : undefined}
-        onMouseLeave={isVideo ? stopVideo : undefined}
-      >
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all z-10" />
+    <div
+      className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col border border-gray-100"
+      onMouseEnter={() => isVideo && playVideo()}
+      onMouseLeave={() => isVideo && pauseVideo()}
+    >
+      {/* MEDIA CONTAINER */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+        {/* Category badge – now overlaid on media */}
+        {category && (
+          <span className="absolute top-3 left-3 z-20 px-3 py-1 text-xs font-semibold text-orange-700 bg-orange-50/90 backdrop-blur-sm rounded-full shadow-sm">
+            {category}
+          </span>
+        )}
 
-        {/* IMAGE */}
+        {/* Image */}
         {isImage && (
           <img
             src={mediaUrl}
-            alt={title || "Project image"}
-            className="w-full h-full object-cover"
+            alt={title || "Project"}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
           />
         )}
 
-        {/* VIDEO */}
+        {/* Video */}
         {isVideo && (
           <>
             <video
               ref={videoRef}
               src={mediaUrl}
+              className="w-full h-full object-cover"
+              loop
               playsInline
               preload="metadata"
-              className="w-full h-full object-cover"
-              onClick={() => (playing ? stopVideo() : playVideo())}
             />
 
-            {/* PLAY ICON */}
-           
+            {/* Play/Pause overlay – shown when not auto-playing on hover */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                playing ? pauseVideo() : playVideo();
+              }}
+              className={`
+                absolute inset-0 flex items-center justify-center 
+                bg-black/25 transition-opacity duration-300
+                ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}
+              `}
+              aria-label={playing ? "Pause" : "Play"}
+            >
+              
+            </button>
           </>
         )}
 
-        {/* FALLBACK */}
         {!isImage && !isVideo && (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+          <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
             No media available
-          </div>
-        )}
-
-        {/* CATEGORY */}
-        {category && (
-          <div className="absolute top-4 left-4 z-20">
-            <span className="px-3 py-1 text-xs font-bold bg-white text-gray-900 rounded-full shadow">
-              {category}
-            </span>
           </div>
         )}
       </div>
 
       {/* CONTENT */}
-      <div className="flex flex-col flex-1 p-6">
-        <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+      <div className="p-5 flex flex-col flex-1">
+        <h4 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
           {title || "Untitled Project"}
         </h4>
 
-        <p className="text-gray-700 mb-4 flex-1 text-sm leading-relaxed line-clamp-3">
-          {description || "No description available."}
+        <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1">
+          {descToShow}
+          {showMoreBtn && (
+            <button
+              onClick={() => setShowFullDescription(!showFullDescription)}
+              className="ml-1.5 text-orange-600 font-medium hover:underline text-sm"
+            >
+              {showFullDescription ? "less" : "more"}
+            </button>
+          )}
         </p>
 
-        <div className="text-sm text-gray-600 space-y-1 mt-auto">
-          {city && <div>📍 {city}</div>}
-          {formattedDate && <div>📅 {formattedDate}</div>}
+        <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-gray-500 mt-auto pt-3 border-t border-gray-100">
+          {city && (
+            <div className="flex items-center gap-1.5">
+              <span>📍</span> {city}
+            </div>
+          )}
+          {formattedDate && (
+            <div className="flex items-center gap-1.5">
+              <span>📅</span> {formattedDate}
+            </div>
+          )}
         </div>
       </div>
-    </article>
+    </div>
   );
 };
 
