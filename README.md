@@ -1,95 +1,119 @@
-🌟 Monark Foundation – NGO Website & Admin Dashboard
+# 🌟 Monark Foundation – NGO Website & Admin Dashboard
 
-A full-stack web platform built for Monark Foundation, designed to manage members, events, impact stories, and testimonials with secure role-based access.
+A full-stack web platform built for **Monark Foundation**, designed to manage members, events, impact stories, and testimonials with secure role-based access.
 
 This project includes:
 
-✅ Public NGO website
-✅ Admin & Sub-Admin dashboard
-✅ Secure authentication & authorization
-✅ Real-time data management
-✅ Responsive modern UI
+✅ Public NGO website  
+✅ Admin & Sub-Admin dashboard  
+✅ Secure authentication & authorization  
+✅ Real-time data management  
+✅ Responsive modern UI  
 
-🚀 Features
-👥 Member Management
+---
 
-Register members with photo, DOB, blood group, language, city, region
+## 🚀 Features
 
-Auto-generated membership ID
+### 👥 Member Management
 
-Search, filter & sort members
+- Register members with:
+  - Photo  
+  - Date of Birth  
+  - Blood group  
+  - Language  
+  - City & region  
+- Auto-generated membership ID  
+- Search, filter & sort members  
+- Promote members to **Sub-Admin**  
+- Prevent Sub-Admin deletion (Admin only control)  
 
-Promote members to Sub-Admin
+---
 
-Prevent Sub-Admin deletion (Admin only control)
+### 🔐 Authentication & Roles
 
-🔐 Authentication & Roles
+- Admin login system (JWT based)  
+- Role-based access control:
 
-Admin login system (JWT based)
+| Role | Access |
+|-----|-------|
+| Admin | Full access |
+| Sub-Admin | Limited access |
 
-Role based access:
+- Protected routes using React Router  
 
-Admin → full access
+---
 
-Sub-Admin → limited access
+### 📅 Event Management (Admin Only)
 
-Protected routes using React Router
+- Create events (image & video supported)  
+- Update & delete events  
+- Upcoming & completed event views  
 
-📅 Event Management (Admin only)
+---
 
-Create events (image/video supported)
+### 📖 Impact Stories & Testimonials
 
-Update & delete events
+- Create, update & manage stories  
+- Dynamic public display  
 
-Upcoming & completed events display
+---
 
-📖 Impact Stories & Testimonials
+### 📊 Admin Dashboard
 
-Create, update and manage stories
+- Sticky search bar  
+- Responsive data tables  
+- Toast notifications  
+- Clean modern UI with Tailwind CSS  
 
-Display success stories dynamically
+---
 
-📊 Admin Dashboard
+### ❌ Custom 404 Page
 
-Sticky search bar
+- Animated Not Found page  
+- Smart redirect based on login state  
 
-Responsive data table
+---
 
-Toast notifications
+## 🛠️ Tech Stack
 
-Clean UI with Tailwind CSS
+### 🎨 Frontend
 
-❌ Custom 404 Page
+- React.js  
+- Redux Toolkit  
+- React Router  
+- Tailwind CSS  
+- React Icons  
+- React Hot Toast  
 
-Beautiful animated Not Found page
+---
 
-Smart redirect based on login state
+### ⚙️ Backend
 
-🛠️ Tech Stack
-Frontend
+- Node.js  
+- Express.js  
+- MongoDB + Mongoose  
+- JWT Authentication  
+- Bcrypt password hashing  
+- Multer + Cloudinary (media upload)  
 
-React.js
+---
 
-Redux Toolkit
+## 📌 Highlights
 
-React Router
+✔ Secure role-based system  
+✔ Modern UI/UX  
+✔ Scalable backend  
+✔ Clean architecture  
+✔ Real-world NGO solution  
 
-Tailwind CSS
 
-React Icons
 
-React Hot Toast
+---
 
-Backend
+## 👨‍💻 Developer
 
-Node.js
+**Prit Vyas**  
+Mern Stack Developer  
 
-Express.js
+---
 
-MongoDB + Mongoose
-
-JWT Authentication
-
-Bcrypt Password Hashing
-
-Multer + Cloudinary (media upload)
