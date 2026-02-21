@@ -63,7 +63,7 @@ const TestimonialsSlider = () => {
                 src={t.mediaUrl}
                 controls
                 controlsList="nodownload"
-                autoPlay
+                preload="metadata"
                 className="relative rounded-2xl shadow-xl max-h-[420px] w-auto object-contain animate-fadeSlide"
               />
             ) : (

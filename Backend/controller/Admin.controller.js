@@ -45,37 +45,42 @@ export const adminLogin = async (req, res) => {
 
 export const makeSubAdmin = async (req, res) => {
   try {
+    // ✅ Only super admin allowed
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Only Super Admin can create Sub-Admins",
+      });
+    }
+
     const member = await Member.findById(req.params.id);
 
     if (!member)
       return res.status(404).json({ message: "Member not found" });
 
-    if (!member.dob)
-      return res.status(400).json({ message: "DOB missing for member" });
+    if (member.isHead)
+      return res.status(400).json({ message: "Already Sub-Admin" });
 
-    // 🔐 username
+    if (!member.dob)
+      return res.status(400).json({ message: "DOB missing" });
+
     const username = member.email || `${member.phone}@monark.com`;
 
-    // ❗ prevent duplicate admin
     const existingAdmin = await Admin.findOne({ email: username });
     if (existingAdmin) {
       return res.status(400).json({ message: "Admin already exists" });
     }
 
-    // 📆 password from DOB
     const rawPassword = formatDOBPassword(member.dob);
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
-    // 👑 create admin
     await Admin.create({
       name: member.name,
       email: username,
       password: hashedPassword,
       role: "sub_admin",
-      createdBy: req.user?.id || null,
+      createdBy: req.userId,
     });
 
-    // update member
     member.isHead = true;
     member.headStatus = "approved";
     await member.save();
@@ -89,8 +94,6 @@ export const makeSubAdmin = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("MAKE SUB ADMIN ERROR:", err);
     res.status(500).json({ message: err.message });
   }
 };
-

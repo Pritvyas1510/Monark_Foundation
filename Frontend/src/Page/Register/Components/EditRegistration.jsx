@@ -54,34 +54,38 @@ const EditDetails = () => {
       scanStyles: true,
       targetStyles: ["*"],
       style: `
-        @page { margin: 0; }
-  
-        body {
-          margin: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-  
-        #id-card {
-          width: 400px !important;
-          height: auto !important;
-          line-height: 1.4 !important;
-        }
-  
-        #id-card * {
-          line-height: 1 !important;
-          gap-y:10px
-      
-        }
-  
-        .print-space {
-          margin-bottom: 10px !important;
-        }
-        .address{
-          font-size:10px;
-          }
-      `,
+@page { margin: 0; }
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#id-card {
+  width: 340px !important;
+  min-height: 540px !important;
+}
+
+/* LOGO TEXT — EXACT LIKE REAL LOGO */
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+/* SAFE PRINT FIX */
+#id-card * {
+  line-height: normal !important;
+}
+
+.address {
+  font-size: 10px !important;
+}
+`,
     });
   };
 
@@ -145,38 +149,37 @@ const EditDetails = () => {
 
   /* ================= SUBMIT EDIT ================= */
 
-const onEditSubmit = async (data) => {
-  try {
-    const formData = new FormData();
+  const onEditSubmit = async (data) => {
+    try {
+      const formData = new FormData();
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (typeof value === "boolean") {
-        formData.append(key, value);
-      } else if (value !== "" && value !== null) {
-        formData.append(key, value);
-      }
-    });
+      Object.entries(data).forEach(([key, value]) => {
+        if (typeof value === "boolean") {
+          formData.append(key, value);
+        } else if (value !== "" && value !== null) {
+          formData.append(key, value);
+        }
+      });
 
-    if (photo) formData.append("photo", photo);
+      if (photo) formData.append("photo", photo);
 
-    const updatedMember = await dispatch(
-      updateMember({
-        id: member._id,
-        data: formData,
-      })
-    ).unwrap();
+      const updatedMember = await dispatch(
+        updateMember({
+          id: member._id,
+          data: formData,
+        }),
+      ).unwrap();
 
-    toast.success("Details updated successfully");
+      toast.success("Details updated successfully");
 
-    // ✅ OPEN MODAL WITH UPDATED DATA
-    setMemberData(updatedMember);
-    setShowModal(true);
-
-  } catch (err) {
-    console.error("Update Error:", err);
-    toast.error("Update failed");
-  }
-};
+      // ✅ OPEN MODAL WITH UPDATED DATA
+      setMemberData(updatedMember);
+      setShowModal(true);
+    } catch (err) {
+      console.error("Update Error:", err);
+      toast.error("Update failed");
+    }
+  };
 
   /* ================= UI ================= */
 

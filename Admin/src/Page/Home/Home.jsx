@@ -166,31 +166,29 @@ const AdminHome = () => {
                       Delete
                     </button>
 
-                    {m.interestedInHead &&
-                      !m.isHead &&
-                      m.headStatus === "pending" && (
-                        <button
-                          onClick={() =>
-                            setConfirmBox({
-                              title: "Promote Member",
-                              message: `Make ${m.name} Sub-Admin?`,
-                              onConfirm: async () => {
-                                try {
-                                  await dispatch(makeSubAdmin(m._id)).unwrap();
-                                  toast.success("Promoted to Sub-Admin");
-                                  dispatch(fetchMembers());
-                                } catch (err) {
-                                  toast.error(err);
-                                }
-                                setConfirmBox(null);
-                              },
-                            })
-                          }
-                          className="bg-green-600 text-white px-3 py-1 rounded text-xs"
-                        >
-                          Make Sub-Admin
-                        </button>
-                      )}
+                    {m.interestedInHead && !m.isHead && (
+                      <button
+                        onClick={() =>
+                          setConfirmBox({
+                            title: "Promote Member",
+                            message: `Make ${m.name} Sub-Admin?`,
+                            onConfirm: async () => {
+                              try {
+                                await dispatch(makeSubAdmin(m._id)).unwrap();
+                                toast.success("Promoted to Sub-Admin");
+                                dispatch(fetchMembers());
+                              } catch (err) {
+                                toast.error(err?.message || err);
+                              }
+                              setConfirmBox(null);
+                            },
+                          })
+                        }
+                        className="bg-green-600 text-white px-3 py-1 rounded text-xs"
+                      >
+                        Make Sub-Admin
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { TbMenuDeep, TbX } from "react-icons/tb";
 import { Link } from "react-router-dom";
-import Logo from "../../Public/Image/Logo.png";
+import Logo from "../../Public/Image/Monark_Foundation_Logo.png";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,14 +36,10 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-1">
-            <img src={Logo} alt="Logo" className="w-[70px]" />
-            <h1 className="text-xl font-extrabold tracking-tight text-[#2c5466]">
-              Monark <span className="text-[#2c5466]">Foundation</span>
-            </h1>
+          <Link to="/" className="flex items-center justify-center pt-3">
+            <img src={Logo} alt="Logo" className="w-60" />
           </Link>
 
-       
           {/* Desktop Links - Perfect Center */}
           <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8">
             {navLinks.map((item) => (

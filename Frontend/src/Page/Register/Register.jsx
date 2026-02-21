@@ -53,7 +53,6 @@ const Register = ({ pdfUrl }) => {
 
   // 🚀 Submit
   const onSubmit = (data) => {
-
     const formData = new FormData();
 
     Object.keys(data).forEach((key) => {
@@ -74,34 +73,38 @@ const Register = ({ pdfUrl }) => {
       scanStyles: true,
       targetStyles: ["*"],
       style: `
-      @page { margin: 0; }
+@page { margin: 0; }
 
-      body {
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-      #id-card {
-        width: 400px !important;
-        height: auto !important;
-        line-height: 1.4 !important;
-      }
+#id-card {
+  width: 340px !important;
+  min-height: 540px !important;
+}
 
-      #id-card * {
-        line-height: 1 !important;
-        gap-y:10px
-    
-      }
+/* LOGO TEXT — EXACT LIKE REAL LOGO */
 
-      .print-space {
-        margin-bottom: 10px !important;
-      }
-      .address{
-        font-size:10px;
-        }
-    `,
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+/* SAFE PRINT FIX */
+#id-card * {
+  line-height: normal !important;
+}
+
+.address {
+  font-size: 10px !important;
+}
+`,
     });
   };
 
@@ -241,7 +244,7 @@ const Register = ({ pdfUrl }) => {
                   <option value="female">Female</option>
                 </select>
               </Input>
- 
+
               <Input label={t("bloodGroup")} error={errors.bloodGroup?.message}>
                 <select
                   {...register("bloodGroup")}

@@ -7,22 +7,19 @@ export const adminAuth = (req, res, next) => {
     return res.status(401).json({ message: "Authorization token required" });
   }
 
-  const parts = authHeader.split(" ");
-
-  if (parts.length !== 2 || parts[0] !== "Bearer") {
-    return res.status(401).json({ message: "Invalid token format" });
-  }
-
-  const token = parts[1];
+  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.adminId = decoded.id;
-    req.role = decoded.role;
+    // ✅ attach proper user object
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+    };
 
     next();
-  } catch (error) {
+  } catch {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

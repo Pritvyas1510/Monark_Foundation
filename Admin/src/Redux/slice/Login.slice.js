@@ -9,11 +9,9 @@ export const adminLogin = createAsyncThunk(
       const res = await api.post("/admin/login", data);
       return res.data;
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Login failed"
-      );
+      return rejectWithValue(err.response?.data?.message || "Login failed");
     }
-  }
+  },
 );
 
 const loginSlice = createSlice({
@@ -21,7 +19,7 @@ const loginSlice = createSlice({
   initialState: {
     loading: false,
     token: localStorage.getItem("token") || null,
-    role: null,
+    role: localStorage.getItem("role") || null,
     name: localStorage.getItem("name") || null,
     lastLogin: null,
     error: null,
@@ -34,6 +32,7 @@ const loginSlice = createSlice({
       state.lastLogin = null;
       localStorage.removeItem("token");
       localStorage.removeItem("name");
+      localStorage.removeItem("role");
     },
   },
   extraReducers: (builder) => {
@@ -51,6 +50,7 @@ const loginSlice = createSlice({
 
         localStorage.setItem("token", action.payload.token);
         localStorage.setItem("name", action.payload.name);
+        localStorage.setItem("role", action.payload.role);
       })
       .addCase(adminLogin.rejected, (state, action) => {
         state.loading = false;

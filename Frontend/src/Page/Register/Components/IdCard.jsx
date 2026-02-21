@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../../../../Public/Image/Logo.png";
+import Logo from "../../../../Public/Image/Monark_Foundation_Logo.png";
 
 const translations = {
   English: {
@@ -43,25 +43,32 @@ const IdCard = ({ member, language = "English" }) => {
       >
         <div className="w-[340px] min-h-[540px] bg-white rounded-2xl border-4 border-[#e65100] overflow-hidden shadow-2xl">
           <div className="h-2 bg-gradient-to-r from-[#e65100] via-[#ffb300] to-[#e65100]" />
+          <div className="items-center justify-center px-6 pt-5 pb-2 border-b-2 border-[#ffe0b2]">
+            <div className="flex items-center justify-center ">
+              <div className="flex items-center gap-1">
+                {/* 
+                //🔶 Logo Circle
+                <div className=" rounded-full  flex items-center justify-center ">
+                  <img
+                    src={Logo}
+                    alt="Monark Foundation"
+                    className="w-17 h-17"
+                  />
+                </div>
 
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b-2 border-[#ffe0b2] gap-3">
-            <div className="w-14 h-14 rounded-full border-2 border-[#e65100] bg-[#fff3e0] flex items-center justify-center">
-              <img src={Logo} alt="Logo" />
+                // 🧡 Text 
+                <div className="leading-tight text-left">
+                  <h1 className="text-2xl font-extrabold tracking-wide monark_heading text-[#0a4c8b]">MONARK</h1>
+                  <h2 className="text-[20] font-semibold tracking-widest foundation_text text-[#0a4c8b]">FOUNDATION</h2>
+                </div> */}
+                <img
+                  src={Logo}
+                  alt="Monark Foundation Logo"
+                  className="-my-17"
+                />
+              </div>
             </div>
-
-            <div className="flex-1 text-center">
-              <h1 className="font-serif text-[#e65100] text-base font-bold leading-tight whitespace-nowrap">
-                Monark Foundation
-              </h1>
-              <p className="text-[#ff8f00] text-[10px] tracking-widest uppercase mt-1 leading-tight">
-                {t.title}
-              </p>
-            </div>
-
-            <div className="w-14" />
           </div>
-
           {/* Photo */}
           <div className="flex flex-col items-center px-5 pt-5 pb-3.5 border-b-2 border-[#ffe0b2]">
             <div className="w-[100px] h-[120px] rounded-xl border-4 border-[#e65100] overflow-hidden bg-[#fff3e0] mb-3">
@@ -78,16 +85,19 @@ const IdCard = ({ member, language = "English" }) => {
               )}
             </div>
 
-            <div className="font-serif text-xl font-bold mb-1">
+            <div className="font-serif text-center text-xl font-bold ">
               {member.name}
             </div>
+            <span className="text-[12px] my-1  w-[100px]font-bold uppercase text-[#ff8f00]">
+              MEMBER
+            </span>
 
             <div className="  px-2 py-0.5 flex items-center gap-2">
-              <span className="text-[9px]  w-[100px]font-semibold uppercase text-[#ff8f00]">
-                ID 
+              <span className="text-[12px]  w-[100px]font-bold uppercase text-[#ff8f00]">
+                ID
               </span>
-              <span className="text-[9px] font-bold text-[#e65100]">
-                  {member.membershipId}
+              <span className="text-[12px] font-extrabold text-[#e65100]">
+                {member.membershipId}
               </span>
             </div>
           </div>
@@ -95,7 +105,11 @@ const IdCard = ({ member, language = "English" }) => {
           {/* Details */}
           <div className="px-5 py-3.5 border-b-2 border-[#ffe0b2] space-y-3 md:space-y-2 print:space-y-2">
             {/* ↑ increased base spacing, print-specific tighter */}
-            <Row label={t.blood} value={member.bloodGroup} highlight />
+            <Row
+              label={t.blood}
+              value={<span>{member.bloodGroup}</span>}
+              highlight
+            />
             <Row label={t.mobile} value={member.phone} />
             <Row label={t.dob} value={formatDate(member.dob)} />
             <Row
@@ -126,7 +140,7 @@ const IdCard = ({ member, language = "English" }) => {
             </p>
 
             <span className="block text-[#e65100] font-bold mt-1">
-              🌐 www.monarkfoundation.ac.in
+              🌐 www.monarkfoundation.in
             </span>
           </div>
 
@@ -146,7 +160,7 @@ const Row = ({ label, value, highlight }) => (
     <span className="font-bold text-[#ffb74d]">:</span>
 
     {highlight ? (
-      <span className="bg-[#fff3e0]    border border-[#ffcc80] rounded-full px-2  text-xs font-bold text-[#e65100] leading-snug">
+      <span className="   text-xs font-bold text-[#e65100] leading-snug">
         {value}
       </span>
     ) : (

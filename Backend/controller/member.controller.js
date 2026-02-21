@@ -1,4 +1,5 @@
 import Member from "../model/Member.model.js";
+import { Admin } from "../model/Admin.model.js";
 import { generateMemberId } from "../utils/generateMemberId.js";
 
 /* ===================== REGISTER ===================== */
@@ -100,27 +101,27 @@ export const updateMember = async (req, res) => {
 
 export const deleteMember = async (req, res) => {
   try {
-    // 🛡 Only super admin can delete
     if (req.user.role !== "admin") {
       return res.status(403).json({
-        message: "Only Super Admin can delete members",
+        message: "Only Admin can delete members",
       });
     }
 
     const member = await Member.findById(req.params.id);
 
-    if (!member) return res.status(404).json({ message: "Member not found" });
+    if (!member) {
+      return res.status(404).json({ message: "Member not found" });
+    }
 
-    // 🚫 Protect Sub-Admins
+    // 🔥 If sub-admin → remove admin account also
     if (member.isHead === true) {
-      return res.status(400).json({
-        message: "Cannot delete Sub-Admin. Demote first.",
-      });
+      await Admin.deleteOne({ email: member.email });
     }
 
     await Member.findByIdAndDelete(req.params.id);
 
     res.json({ message: "Member deleted successfully" });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

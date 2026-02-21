@@ -20,7 +20,7 @@ const SecondaryEvents = () => {
         )
     : [];
 
-  console.log("EVENTS:", events);
+
   const secondaryEvents = completedEvents;
 
   if (loading) {

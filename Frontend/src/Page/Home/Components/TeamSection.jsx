@@ -2,36 +2,44 @@
 import { useState } from "react";
 import TeamMemberCard from "../../../components/TeamMemberCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import Hasmukh_Sir from "../../../../Public/Image/Hasmukh_Sir.JPG";
+import satish_sir from "../../../../Public/Image/satish_sir.JPG";
+import monark_sir from "../../../../Public/Image/Monark_sir.jpg";
+import zeel_sir from "../../../../Public/Image/Zeel_sir.jpeg"
 
 const TeamSection = () => {
   const teamMembers = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=800",
-      name: "Rahul Mehta",
-      position: "Founder & Trustee",
-      bio: "Visionary leader with 15+ years of experience in social impact and rural development.",
+      image: Hasmukh_Sir,
+      name: "Hasmukh Goswami",
+      position: "President",
+      bio: "Strategic social leader advancing community empowerment and sustainable development initiatives.",
+      email: "vyasprit962@gmail.com",
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=800",
-      name: "Anita Sharma",
-      position: "Program Director",
-      bio: "Expert in education and women empowerment initiatives across India.",
+      image: satish_sir,
+      name: "Satish Goswami",
+      position: "Vice President",
+      bio: "Dedicated leader driving education reform and women empowerment programs nationwide.",
+      email: "",
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?w=800",
-      name: "Vikram Patel",
-      position: "Operations Head",
-      bio: "Ensures smooth execution of projects on the ground with strong community connections.",
+      image: zeel_sir,
+      name: "Zeel Goswami",
+      position: "Director-MRDC",
+      bio: "Leads MRDC initiatives through strategic planning, team coordination, and strong community partnerships.",
+      email: "",
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=800",
-      name: "Neha Joshi",
-      position: "Communications Lead",
-      bio: "Handles outreach, storytelling, and donor engagement for the foundation.",
+      image: monark_sir,
+      name: "Monark Goswami",
+      position: "CEO",
+      bio: "Leads strategic growth, outreach initiatives, and operational excellence for the foundation.",
+      email: "",
     },
   ];
 
@@ -39,9 +47,7 @@ const TeamSection = () => {
   const [mobileIndex, setMobileIndex] = useState(0);
 
   const nextSlide = () => {
-    setMobileIndex((prev) =>
-      prev < teamMembers.length - 1 ? prev + 1 : prev
-    );
+    setMobileIndex((prev) => (prev < teamMembers.length - 1 ? prev + 1 : prev));
   };
 
   const prevSlide = () => {

@@ -8,6 +8,7 @@ import {
   updateMember,
   deleteMember,
 } from "../controller/member.controller.js";
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -23,6 +24,6 @@ router.get("/phone/:phone", getMemberByPhone);
 
 router.put("/:id", upload.single("photo"), updateMember);
 
-router.delete("/:id", deleteMember);
+router.delete("/:id",auth, deleteMember);
 
 export default router;
