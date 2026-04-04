@@ -41,8 +41,8 @@ const IdCard = ({ member, language = "English" }) => {
         className="mx-auto w-[340px] print:block"
         style={{ pageBreakInside: "avoid" }}
       >
-        <div className="w-[340px] min-h-[540px] bg-white rounded-2xl border-4 border-[#e65100] overflow-hidden shadow-2xl">
-          <div className="h-2 bg-gradient-to-r from-[#e65100] via-[#ffb300] to-[#e65100]" />
+        <div className="w-[340px] min-h-[540px] bg-white rounded-2xl border-4 border-blue-600 overflow-hidden shadow-2xl">
+          <div className="h-2 bg-gradient-to-r from-[#0049e6] via-[#ffb300] to-[#3575ec]" />
           <div className="items-center justify-center px-6 pt-5 pb-2 border-b-2 border-[#ffe0b2]">
             <div className="flex items-center justify-center ">
               <div className="flex items-center gap-1">

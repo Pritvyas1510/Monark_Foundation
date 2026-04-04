@@ -4,6 +4,7 @@ import eventReducer from "./slice/Events.slice.js";
 import editMemberReducer from "./slice/editMember.slice.js"
 import userimpacetReducer from "./slice/Impactstory.slice.js"
 import testimonialReducer from "./slice/Testimonial.slice.js"
+import regionalHeadsReducer from"./slice/RegionalHeads.slice.js"
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     editMember: editMemberReducer,
     impact:userimpacetReducer,
     testimonial:testimonialReducer,
+    regionalHeads: regionalHeadsReducer,
   },
 
   // Redux DevTools enabled automatically in development

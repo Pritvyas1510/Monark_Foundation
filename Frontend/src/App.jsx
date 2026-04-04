@@ -9,6 +9,7 @@ import Evenet from "./Page/Event/Evenet";
 import ScrollToTop from "./components/ScrollToTop";
 import AboutUs from "./Page/AboutUs/AboutUs";
 import NotFound from "./components/NotFound";
+import Leadership from "./Page/Leadership/Leadership";
 
 // Lazy load pages
 const Home = lazy(() => import("./Page/Home/Home"));
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/editdetails" element={<EditRegistration />} />
           <Route path="/event" element={<Evenet/>}/>
           <Route path="/about" element={<AboutUs/>}/>
+          <Route path="/leadership" element={<Leadership/>}/>
 
           {/* Not Found Page*/}
           <Route path="*" element={<NotFound/>}/>

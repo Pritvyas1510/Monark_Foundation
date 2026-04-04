@@ -121,7 +121,88 @@ export const deleteMember = async (req, res) => {
     await Member.findByIdAndDelete(req.params.id);
 
     res.json({ message: "Member deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
+/* ===================== GET RANDOM REGIONAL HEADS ===================== */
+export const getRegionalHeads = async (req, res) => {
+  try {
+
+    const heads = await Member.find({
+      isHead: true,
+      headStatus: { $regex: "^approved$", $options: "i" }
+    }).limit(10);
+
+    res.json(heads);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* ===================== SEARCH REGIONAL HEAD ===================== */
+export const searchRegionalHeads = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    const heads = await Member.find({
+      isHead: true,
+      headStatus: { $regex: "^approved$", $options: "i" },
+      $or: [
+        { region: { $regex: q, $options: "i" } },
+        { city: { $regex: q, $options: "i" } },
+        { address: { $regex: q, $options: "i" } },
+      ],
+    }).limit(20);
+
+    res.json(heads);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* ===================== SEARCH SUGGESTION ===================== */
+export const searchSuggestions = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    const heads = await Member.find({
+      isHead: true,
+      headStatus: "approved",
+      $or: [
+        { region: { $regex: q, $options: "i" } },
+        { city: { $regex: q, $options: "i" } },
+        { address: { $regex: q, $options: "i" } },
+      ],
+    }).limit(10);
+
+    // Extract better suggestions
+    const suggestions = [];
+
+    heads.forEach((h) => {
+      if (h.city) suggestions.push({ suggestion: h.city });
+      if (h.region) suggestions.push({ suggestion: h.region });
+
+      // Extract keywords from address
+      if (h.address) {
+        const parts = h.address.split(" ");
+        parts.forEach((p) => {
+          if (p.toLowerCase().includes(q.toLowerCase())) {
+            suggestions.push({ suggestion: p });
+          }
+        });
+      }
+    });
+
+    // remove duplicates
+    const unique = [
+      ...new Map(suggestions.map((s) => [s.suggestion, s])).values(),
+    ];
+
+    res.json(unique.slice(0, 6));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

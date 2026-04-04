@@ -7,6 +7,9 @@ import {
   getMemberByPhone,
   updateMember,
   deleteMember,
+  getRegionalHeads,
+  searchRegionalHeads,
+  searchSuggestions,
 } from "../controller/member.controller.js";
 import { auth } from "../middleware/auth.js";
 
@@ -25,5 +28,11 @@ router.get("/phone/:phone", getMemberByPhone);
 router.put("/:id", upload.single("photo"), updateMember);
 
 router.delete("/:id",auth, deleteMember);
+
+router.get("/regional-heads", getRegionalHeads);
+
+router.get("/regional-heads/search", searchRegionalHeads);
+
+router.get("/regional-heads/suggestions", searchSuggestions);
 
 export default router;

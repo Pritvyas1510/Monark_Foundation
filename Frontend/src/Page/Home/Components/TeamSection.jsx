@@ -4,7 +4,7 @@ import TeamMemberCard from "../../../components/TeamMemberCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Hasmukh_Sir from "../../../../Public/Image/Hasmukh_Sir.JPG";
 import satish_sir from "../../../../Public/Image/satish_sir.JPG";
-import monark_sir from "../../../../Public/Image/Monark_sir.jpg";
+import monark_sir from "../../../../Public/Image/Monark_sir.png";
 import zeel_sir from "../../../../Public/Image/Zeel_sir.jpeg"
 
 const TeamSection = () => {
@@ -12,7 +12,7 @@ const TeamSection = () => {
     {
       id: 1,
       image: Hasmukh_Sir,
-      name: "Hasmukh Goswami",
+      name: "Dr.Hasmukh Goswami",
       position: "President",
       bio: "Strategic social leader advancing community empowerment and sustainable development initiatives.",
       email: "vyasprit962@gmail.com",
@@ -20,7 +20,7 @@ const TeamSection = () => {
     {
       id: 2,
       image: satish_sir,
-      name: "Satish Goswami",
+      name: "Dr.Satish Goswami",
       position: "Vice President",
       bio: "Dedicated leader driving education reform and women empowerment programs nationwide.",
       email: "",

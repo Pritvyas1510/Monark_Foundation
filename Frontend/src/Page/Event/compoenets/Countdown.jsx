@@ -29,7 +29,7 @@ const Countdown = ({ eventDate }) => {
     "w-20 h-20 md:w-24 md:h-24 rounded-xl flex items-center justify-center shadow-lg";
 
   return (
-    <div className="flex gap-4 md:gap-6">
+    <div className="flex justify-center items-center gap-4 md:gap-6 flex-wrap">
       {[
         { value: timeLeft.days, label: "Days" },
         { value: timeLeft.hours, label: "Hours", bordered: true },
@@ -56,6 +56,6 @@ const Countdown = ({ eventDate }) => {
       ))}
     </div>
   );
-}
+};
 
 export default Countdown;

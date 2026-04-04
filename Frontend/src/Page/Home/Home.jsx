@@ -9,6 +9,7 @@ import FAQSection from './Components/FAQSection'
 import CTASection from './Components/CTASection'
 import BackToTop from './Components/BackToTop'
 import EventNotifyed from './Components/EventNotifyed'
+import ImpactFeed from './Components/ImpactFeed'
 
 const Home = () => {
   return (
@@ -21,6 +22,7 @@ const Home = () => {
         <TeamSection/>
         <GetInvolved/>
         <FAQSection/>
+        <ImpactFeed/>
         <CTASection/>
         <BackToTop/>
     </div>
