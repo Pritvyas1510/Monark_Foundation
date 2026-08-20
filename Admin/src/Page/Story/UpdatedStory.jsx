@@ -3,6 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateStory, fetchStories } from "../../Redux/slice/Story.slice.js";
 import toast from "react-hot-toast";
+import {
+  FaHeading,
+  FaUser,
+  FaBriefcase,
+  FaAlignLeft,
+  FaImage,
+  FaTimes,
+  FaGlobe,
+} from "react-icons/fa";
 
 const UpdatedStory = () => {
   const { id } = useParams();
@@ -24,19 +33,16 @@ const UpdatedStory = () => {
   const [preview, setPreview] = useState(null);
   const [mediaType, setMediaType] = useState("image");
   const [newMedia, setNewMedia] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  /* ===============================
-     FETCH IF NOT LOADED
-  =============================== */
+  /* FETCH IF NOT LOADED */
   useEffect(() => {
     if (!stories.length) {
       dispatch(fetchStories());
     }
   }, [dispatch, stories.length]);
 
-  /* ===============================
-     SET EXISTING DATA
-  =============================== */
+  /* SET EXISTING DATA */
   useEffect(() => {
     if (story) {
       setForm({
@@ -52,9 +58,6 @@ const UpdatedStory = () => {
     }
   }, [story]);
 
-  /* ===============================
-     INPUT CHANGE
-  =============================== */
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({
@@ -63,9 +66,6 @@ const UpdatedStory = () => {
     });
   };
 
-  /* ===============================
-     MEDIA CHANGE
-  =============================== */
   const handleMediaChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -80,11 +80,9 @@ const UpdatedStory = () => {
     setNewMedia(null);
   };
 
-  /* ===============================
-     SUBMIT
-  =============================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
     const formData = new FormData();
 
@@ -100,118 +98,180 @@ const UpdatedStory = () => {
       navigate("/story");
     } catch {
       toast.error("Update failed");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  if (!story)
-    return <p className="text-center py-20 text-lg">Loading story...</p>;
+  if (!story) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
+        <div className="h-10 w-10 rounded-full border-4 border-orange-500 border-t-transparent animate-spin" />
+        <p className="text-gray-500 text-sm">Loading story...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">
-        Update Story
-      </h2>
-
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow rounded-2xl p-6 space-y-5"
-      >
-        {/* PREVIEW */}
-        {preview && (
-          <div className="relative w-full h-64 rounded-xl overflow-hidden">
-            {mediaType === "video" ? (
-              <video
-                src={preview}
-                className="w-full h-full object-cover"
-                controls
-              />
-            ) : (
-              <img
-                src={preview}
-                alt="preview"
-                className="w-full h-full object-cover"
-              />
-            )}
-
-            <button
-              type="button"
-              onClick={removeMedia}
-              className="absolute top-3 right-3 bg-red-600 text-white rounded-full w-8 h-8 font-bold"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
-        {!preview && (
-          <input
-            type="file"
-            accept="image/*,video/*"
-            onChange={handleMediaChange}
-            className="border p-3 rounded-lg w-full"
-          />
-        )}
-
-        {/* TITLE */}
-        <input
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          placeholder="Title"
-          className="border p-3 rounded-lg w-full"
-          required
-        />
-
-        {/* NAME */}
-        <input
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Name"
-          className="border p-3 rounded-lg w-full"
-        />
-
-        {/* ROLE */}
-        <input
-          name="role"
-          value={form.role}
-          onChange={handleChange}
-          placeholder="Role"
-          className="border p-3 rounded-lg w-full"
-        />
-
-        {/* DESCRIPTION */}
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          rows="5"
-          placeholder="Description"
-          className="border p-3 rounded-lg w-full"
-          required
-        />
-
-        {/* PUBLISH TOGGLE */}
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            name="isPublished"
-            checked={form.isPublished}
-            onChange={handleChange}
-          />
-          <span className="text-sm font-medium">
-            Publish this story
-          </span>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-gray-100 p-6">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Update Story</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Edit the story details below and save your changes.
+          </p>
         </div>
 
-        {/* SUBMIT */}
-        <button
-          type="submit"
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold shadow w-full"
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white shadow-xl rounded-2xl p-8 space-y-5 border border-gray-100"
         >
-          Update Story
-        </button>
-      </form>
+          {/* MEDIA */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1.5">
+              <FaImage className="text-orange-500" size={13} /> Image or Video
+            </label>
+
+            {preview ? (
+              <div className="relative w-full h-64 rounded-xl overflow-hidden border border-gray-200 bg-black">
+                {mediaType === "video" ? (
+                  <video
+                    src={preview}
+                    className="w-full h-full object-cover"
+                    controls
+                  />
+                ) : (
+                  <img
+                    src={preview}
+                    alt="Story preview"
+                    className="w-full h-full object-cover"
+                  />
+                )}
+                <button
+                  type="button"
+                  onClick={removeMedia}
+                  aria-label="Remove media"
+                  className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 text-white rounded-full h-8 w-8 flex items-center justify-center shadow"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            ) : (
+              <label
+                htmlFor="story-media-upload"
+                className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl py-10 cursor-pointer hover:border-orange-400 hover:bg-orange-50/40 transition"
+              >
+                <FaImage className="text-gray-400 mb-2" size={24} />
+                <span className="text-sm text-gray-500">
+                  Click to upload an image or video
+                </span>
+                <span className="text-xs text-gray-400 mt-1">
+                  MP4, PNG or JPG
+                </span>
+                <input
+                  id="story-media-upload"
+                  type="file"
+                  accept="image/*,video/*"
+                  onChange={handleMediaChange}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
+
+          {/* Title */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1.5">
+              <FaHeading className="text-orange-500" size={13} /> Story Title
+            </label>
+            <input
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              placeholder="e.g. A Journey of Resilience"
+              required
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
+            />
+          </div>
+
+          {/* Name & Role */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1.5">
+                <FaUser className="text-orange-500" size={13} /> Person Name
+              </label>
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="e.g. Priya Sharma"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1.5">
+                <FaBriefcase className="text-orange-500" size={13} /> Role / Profession
+              </label>
+              <input
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                placeholder="e.g. Student, Volunteer"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
+              />
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1.5">
+              <FaAlignLeft className="text-orange-500" size={13} /> Full Description
+            </label>
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              rows="5"
+              placeholder="Share the full story in their own words..."
+              required
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition resize-none"
+            />
+          </div>
+
+          {/* PUBLISH TOGGLE */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1.5">
+              <FaGlobe className="text-orange-500" size={13} /> Publish Status
+            </label>
+            <label
+              htmlFor="isPublished"
+              className="flex items-center justify-between border border-gray-300 rounded-lg px-4 py-2.5 cursor-pointer hover:border-orange-300 transition"
+            >
+              <span className="text-sm text-gray-700">
+                {form.isPublished
+                  ? "Story is live and visible on the site"
+                  : "Story is saved as a draft"}
+              </span>
+              <input
+                id="isPublished"
+                type="checkbox"
+                name="isPublished"
+                checked={form.isPublished}
+                onChange={handleChange}
+                className="h-5 w-5 accent-orange-500 cursor-pointer"
+              />
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-semibold py-3 rounded-lg shadow-sm transition"
+          >
+            {submitting ? "Updating..." : "Update Story"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

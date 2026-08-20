@@ -5,7 +5,7 @@ const impactStorySchema = new mongoose.Schema({
   subtitle: { type: String },
   description: { type: String, required: true },
   imageUrl: { type: String, required: true },
-  articleUrl: { type: String, required: true },
+  videoUrl: { type: String, required: true }, // replaces articleUrl
 
   peopleImpacted: Number,
   availability: String,

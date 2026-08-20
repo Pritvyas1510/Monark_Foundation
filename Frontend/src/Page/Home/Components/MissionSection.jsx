@@ -42,9 +42,8 @@ const initiatives = [
 const MissionSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Auto-slide only on mobile
   useEffect(() => {
-    const isMobile = window.innerWidth < 768; // md breakpoint in Tailwind
+    const isMobile = window.innerWidth < 768;
     if (!isMobile) return;
 
     const interval = setInterval(() => {
@@ -54,8 +53,7 @@ const MissionSection = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Card component (used in both grid and slider)
-  const InitiativeCard = ({ item, index }) => {
+  const InitiativeCard = ({ item }) => {
     const Icon = item.icon;
     const isSpecial = item.special;
 
@@ -68,23 +66,26 @@ const MissionSection = () => {
           ${isSpecial ? "" : "hover:shadow-xl"}
         `}
       >
+        {/* ✅ Bigger icon */}
         <Icon
           className={`
-            text-4xl mb-4 
+            text-5xl mb-5
             ${isSpecial ? "opacity-80" : "text-primary group-hover:scale-110 transition-transform"}
           `}
         />
+        {/* ✅ Bigger title */}
         <h3
           className={`
-            text-3xl md:text-2xl font-black mb-1
+            text-2xl font-black mb-2
             ${isSpecial ? "" : "text-text-main dark:text-black"}
           `}
         >
           {item.title}
         </h3>
+        {/* ✅ Bigger description */}
         <p
           className={`
-            font-medium md:text-[12px]
+            text-sm leading-relaxed
             ${isSpecial ? "opacity-90" : "text-text-main/60 dark:text-black"}
           `}
         >
@@ -100,21 +101,24 @@ const MissionSection = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row gap-16 items-center">
-          {/* Left Column – Text content */}
+
+          {/* Left Column */}
           <div className="lg:w-1/2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary mb-6">
-              <span className="text-[10px] font-bold uppercase tracking-widest">
+              <span className="text-xs font-bold uppercase tracking-widest">
                 Changing Lives One Child at a Time
               </span>
             </div>
 
-            <h2 className="text-4xl md:text-2xl font-black text-text-main dark:text-white leading-tight mb-6">
+            {/* ✅ Bigger heading */}
+            <h2 className="text-4xl md:text-4xl font-black text-text-main dark:text-white leading-tight mb-6">
               Every Child Deserves a Brighter Future.
               <br />
               <span className="text-primary">We Make It Possible.</span>
             </h2>
 
-            <p className="text-sm text-text-main/70 dark:text-white/70 mb-8 leading-relaxed">
+            {/* ✅ Bigger paragraph */}
+            <p className="text-base text-text-main/70 dark:text-white/70 mb-8 leading-relaxed">
               Monark Foundation Works To Empower Children Through Education While
               Addressing Broader Social, Humanitarian, And Environmental
               Challenges. From Scholarships And School Kit Distribution To
@@ -124,45 +128,46 @@ const MissionSection = () => {
             </p>
 
             <div className="space-y-6">
-              <div className="flex gap-4 p-4 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md transition-all">
-                <div className="shrink-0 size-12 rounded-full bg-orange-100 dark:bg-orange-900/30 text-primary flex items-center justify-center text-xl">
+              {/* ✅ Bigger list cards */}
+              <div className="flex gap-4 p-5 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md transition-all">
+                <div className="shrink-0 size-14 rounded-full bg-orange-100 dark:bg-orange-900/30 text-primary flex items-center justify-center text-2xl">
                   <FaSchool />
                 </div>
                 <div>
-                  <h4 className="text-[12px] font-bold text-text-main dark:text-black">
+                  <h4 className="text-base font-bold text-text-main dark:text-black mb-1">
                     Education & Scholarships
                   </h4>
-                  <p className="text-[12px] text-text-main/60 dark:text-black">
+                  <p className="text-sm text-text-main/60 dark:text-black">
                     Providing school kits, scholarships, and learning resources to
                     help underprivileged children access quality education.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-4 p-4 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md transition-all">
-                <div className="shrink-0 size-12 rounded-full bg-orange-100 dark:bg-orange-900/30 text-primary flex items-center justify-center text-xl">
+              <div className="flex gap-4 p-5 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md transition-all">
+                <div className="shrink-0 size-14 rounded-full bg-orange-100 dark:bg-orange-900/30 text-primary flex items-center justify-center text-2xl">
                   <FaTint />
                 </div>
                 <div>
-                  <h4 className="text-[12px] font-bold text-text-main dark:text-black">
+                  <h4 className="text-base font-bold text-text-main dark:text-black mb-1">
                     Healthcare & Clean Water
                   </h4>
-                  <p className="text-[10px] text-text-main/60 dark:text-black">
+                  <p className="text-sm text-text-main/60 dark:text-black">
                     Supporting medical camps, health access, and clean drinking water
                     projects to improve well-being.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-4 p-4 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md transition-all">
-                <div className="shrink-0 size-12 rounded-full bg-orange-100 dark:bg-orange-900/30 text-primary flex items-center justify-center text-xl">
+              <div className="flex gap-4 p-5 rounded-xl bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md transition-all">
+                <div className="shrink-0 size-14 rounded-full bg-orange-100 dark:bg-orange-900/30 text-primary flex items-center justify-center text-2xl">
                   <FaHandsHelping />
                 </div>
                 <div>
-                  <h4 className="text-[12px] font-bold text-text-main dark:text-black">
+                  <h4 className="text-base font-bold text-text-main dark:text-black mb-1">
                     Disaster Relief & Poverty Support
                   </h4>
-                  <p className="text-[10px] text-text-main/60 dark:text-black">
+                  <p className="text-sm text-text-main/60 dark:text-black">
                     Delivering emergency aid, food support, and rehabilitation
                     programs to help families recover.
                   </p>
@@ -170,26 +175,18 @@ const MissionSection = () => {
               </div>
             </div>
 
-            <div className="mt-5">
-              <a
-                href="#"
-                className="text-primary font-bold hover:text-primary-dark text-[12px] inline-flex items-center gap-2 group"
-              >
-                Read our full manifesto
-                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
-              </a>
-            </div>
+            
           </div>
 
-          {/* Right Column – Cards / Slider */}
+          {/* Right Column – Cards */}
           <div className="lg:w-1/2 w-full">
-            {/* Desktop Grid */}
-            <div className="hidden lg:grid grid-cols-2 gap-6">
-              <div className="space-y-6 mt-12">
+            {/* ✅ Desktop Grid — bigger gap and card height */}
+            <div className="hidden lg:grid grid-cols-2 gap-8">
+              <div className="space-y-8 mt-12">
                 <InitiativeCard item={initiatives[0]} />
                 <InitiativeCard item={initiatives[1]} />
               </div>
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <InitiativeCard item={initiatives[2]} />
                 <InitiativeCard item={initiatives[3]} />
               </div>
@@ -208,7 +205,6 @@ const MissionSection = () => {
                 ))}
               </div>
 
-              {/* Dots */}
               <div className="flex justify-center gap-3 mt-6">
                 {initiatives.map((_, idx) => (
                   <button
@@ -224,8 +220,10 @@ const MissionSection = () => {
               </div>
             </div>
           </div>
+
         </div>
       </div>
+      
     </section>
   );
 };

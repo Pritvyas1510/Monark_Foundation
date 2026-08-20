@@ -2,14 +2,21 @@ import ImpactStory from "../model/ImpactStory.model.js";
 
 export const createStory = async (req, res) => {
   try {
+    const imageFile = req.files?.image?.[0];
+    const videoFile = req.files?.video?.[0];
+
+    if (!imageFile || !videoFile) {
+      return res.status(400).json({ message: "Both image and video are required" });
+    }
+
     const story = await ImpactStory.create({
       title: req.body.title,
       subtitle: req.body.subtitle,
       description: req.body.description,
-      articleUrl: req.body.articleUrl,
       peopleImpacted: req.body.peopleImpacted,
       availability: req.body.availability,
-      imageUrl: req.file.path
+      imageUrl: imageFile.path,
+      videoUrl: videoFile.path,
     });
 
     res.status(201).json(story);
@@ -24,14 +31,15 @@ export const updateStory = async (req, res) => {
       title: req.body.title,
       subtitle: req.body.subtitle,
       description: req.body.description,
-      articleUrl: req.body.articleUrl,
       peopleImpacted: req.body.peopleImpacted,
       availability: req.body.availability,
     };
 
-    if (req.file) {
-      updatedData.imageUrl = req.file.path;
-    }
+    const imageFile = req.files?.image?.[0];
+    const videoFile = req.files?.video?.[0];
+
+    if (imageFile) updatedData.imageUrl = imageFile.path;
+    if (videoFile) updatedData.videoUrl = videoFile.path;
 
     const story = await ImpactStory.findByIdAndUpdate(
       req.params.id,
@@ -45,18 +53,14 @@ export const updateStory = async (req, res) => {
   }
 };
 
-
 export const getAllStories = async (req, res) => {
   try {
-    const stories = await ImpactStory.find()
-      .sort({ createdAt: -1 });
-
+    const stories = await ImpactStory.find().sort({ createdAt: -1 });
     res.json(stories);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 export const togglePublish = async (req, res) => {
   try {
@@ -65,7 +69,6 @@ export const togglePublish = async (req, res) => {
       { isPublished: req.body.isPublished },
       { new: true }
     );
-
     res.json(story);
   } catch (err) {
     res.status(500).json({ message: err.message });

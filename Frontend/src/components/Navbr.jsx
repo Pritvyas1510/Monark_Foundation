@@ -55,9 +55,9 @@ const Navbar = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-center">
             <Link to="/register">
-              <button className="hidden sm:flex h-10 p-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
+              <button className="hidden sm:flex h-10  p-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
                 Register
               </button>
             </Link>

@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
 import print from "print-js";
 import IdCard from "./Components/IdCard.jsx";
+import { CheckCircle2, HeartHandshake, Users } from "lucide-react";
 
 const Register = ({ pdfUrl }) => {
   const dispatch = useDispatch();
@@ -39,6 +40,12 @@ const Register = ({ pdfUrl }) => {
       interestedInHead: false,
     },
   });
+
+  const features = [
+    "Free health checkup camps",
+    "After-school tuition support",
+    "Skill development workshops",
+  ];
 
   // 🌐 Language switch
   const handleLanguageChange = (lng) => {
@@ -129,29 +136,63 @@ body {
     <section className="min-h-screen bg-gradient-to-br from-orange-100 via-orange-50 to-white flex justify-center px-4 py-6">
       <div className="max-w-7xl w-full grid md:grid-cols-2 bg-white rounded-3xl shadow-2xl overflow-hidden">
         {/* LEFT */}
-        <div className="hidden md:flex flex-col bg-orange-500 text-white p-8">
-          <h2 className="text-3xl font-bold mb-3">
-            Monark Foundation Membership
-          </h2>
-          <p className="text-sm mb-4">
-            Join us to create social impact across communities.
-          </p>
+        <div className="hidden md:flex flex-col relative overflow-hidden bg-gradient-to-br from-[#ff6a2f] via-[#ff5a1f] to-[#e8480f] text-white p-8 lg:p-10">
+          {/* ===== Decorative background blobs ===== */}
+          <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-2xl animate-pulse" />
+          <div
+            className="pointer-events-none absolute bottom-[-4rem] left-[-3rem] w-56 h-56 rounded-full bg-[#06245c]/25 blur-2xl animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
 
-          <div className="flex-1 rounded-xl overflow-hidden mb-6">
+          {/* ===== Heading ===== */}
+          <div className="relative z-10">
+            <h2 className="text-3xl font-bold mb-3 leading-tight">
+              Monark Foundation Membership
+            </h2>
+            <p className="text-sm text-white/85 mb-6 leading-relaxed max-w-sm">
+              Join us to create social impact across communities — education,
+              health and everyday support for families who need it most.
+            </p>
+          </div>
+
+          {/* ===== Image with floating stat card ===== */}
+          <div className="relative z-10 flex-1 rounded-2xl overflow-hidden mb-8 shadow-xl min-h-[220px]">
             <img
               src="https://images.unsplash.com/photo-1521791136064-7986c2920216"
               className="w-full h-full object-cover"
               alt="community"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+
+            <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 bg-white/95 backdrop-blur rounded-xl px-4 py-3 shadow-lg">
+              <div className="w-9 h-9 rounded-full bg-[#ff5a1f]/10 flex items-center justify-center shrink-0">
+                <Users className="text-[#ff5a1f]" size={18} />
+              </div>
+              <div className="leading-tight">
+                <p className="text-[#06245c] font-bold text-lg">
+                  Join a community that{" "}
+                  <span className="text-[#ff5a1f]">shows up</span>
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="flex gap-4 justify-center">
-            <button className="bg-blue-700 px-4 py-2 rounded-xl">
-              Learn More
-            </button>
-            <button className="bg-blue-700 px-4 py-2 rounded-xl">
-              View Stories
-            </button>
+          {/* ===== Feature checklist ===== */}
+          <div className="relative z-10 space-y-3">
+            {features.map((item) => (
+              <div key={item} className="flex items-center gap-3">
+                <CheckCircle2 size={18} className="text-white/90 shrink-0" />
+                <span className="text-sm text-white/90">{item}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* ===== Bottom quote strip ===== */}
+          <div className="relative z-10 mt-8 pt-6 border-t border-white/20 flex items-center gap-2">
+            <HeartHandshake size={16} className="text-white/80" />
+            <p className="text-xs text-white/80 italic">
+              "Real support, not just good intentions."
+            </p>
           </div>
         </div>
 

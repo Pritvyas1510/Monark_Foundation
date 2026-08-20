@@ -1,0 +1,26 @@
+/* Scoped to the Regional Heads slider so it doesn't affect other Swiper
+   instances elsewhere in the app. */
+.regional-heads-swiper .swiper-button-next,
+.regional-heads-swiper .swiper-button-prev {
+  color: #ee8c2b;
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border-radius: 9999px;
+  box-shadow: 0 8px 20px -8px rgba(17, 24, 39, 0.25);
+}
+
+.regional-heads-swiper .swiper-button-next::after,
+.regional-heads-swiper .swiper-button-prev::after {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.regional-heads-swiper .swiper-pagination-bullet {
+  background: #d1d5db;
+  opacity: 1;
+}
+
+.regional-heads-swiper .swiper-pagination-bullet-active {
+  background: #ee8c2b;
+}

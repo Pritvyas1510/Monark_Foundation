@@ -1,10 +1,14 @@
 // src/components/Initiatives.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProjectCard from "../../../components/ProjectCard";
 import { fetchEvents } from "../../../Redux/slice/Events.slice";
 import { Link } from "react-router-dom";
-import { LiaArrowRightSolid, LiaAngleLeftSolid, LiaAngleRightSolid } from "react-icons/lia";
+import { LiaArrowRightSolid } from "react-icons/lia";
+
+const AUTO_SLIDE_MS = 10000; // move 1 card every 10 seconds
+const WHEEL_THROTTLE_MS = 500; // ignore rapid trackpad wheel spam
+const DRAG_THRESHOLD_PX = 60; // how far you must drag/swipe before it counts as a slide change
 
 const Initiatives = () => {
   const dispatch = useDispatch();
@@ -14,10 +18,25 @@ const Initiatives = () => {
     dispatch(fetchEvents());
   }, [dispatch]);
 
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Determine how many cards to show based on screen width
+  // Only one card's video should ever play at once. Whichever card starts
+  // playing sets itself as the active id; every other card gets isActive
+  // === false and stops itself (see ProjectCard).
+  const [activePlayingId, setActivePlayingId] = useState(null);
+
+  // Drag/swipe state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffsetPx, setDragOffsetPx] = useState(0);
+  const dragStartXRef = useRef(0);
+  const trackWidthRef = useRef(0);
+
+  const wheelLockRef = useRef(false);
+  const sliderRef = useRef(null);
+  const trackRef = useRef(null);
+
   useEffect(() => {
     const updateCardsPerView = () => {
       const width = window.innerWidth;
@@ -27,42 +46,122 @@ const Initiatives = () => {
     };
 
     const handleResize = () => {
-      const newValue = updateCardsPerView();
-      setCardsPerView(newValue);
-      // Reset to first page when layout changes significantly
-      setCurrentSlide(0);
+      setCardsPerView(updateCardsPerView());
+      setCurrentIndex(0);
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // initial call
-
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Auto-play only on mobile (1 card visible)
+  const totalItems = loading ? 6 : events.length;
+  // Last valid index so the final cards align flush with the right edge
+  const maxIndex = Math.max(totalItems - cardsPerView, 0);
+  const canSlide = totalItems > cardsPerView;
+
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  }, [maxIndex]);
+
+  const goToPrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  }, [maxIndex]);
+
+  // Auto-play: move ONE card every 10 seconds, infinite loop, pause on hover/drag
   useEffect(() => {
-    if (cardsPerView !== 1 || loading || events.length <= 1) return;
+    if (loading || !canSlide || isHovered || isDragging) return undefined;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % totalSlides);
-    }, 5000);
+      goToNext();
+    }, AUTO_SLIDE_MS);
 
     return () => clearInterval(interval);
-  }, [cardsPerView, events.length, loading]);
+  }, [loading, canSlide, isHovered, isDragging, goToNext]);
 
-  const totalItems = loading ? 6 : events.length;
-  const totalSlides = Math.ceil(totalItems / cardsPerView);
+  // Mouse-wheel / trackpad scroll navigation
+  const handleWheel = useCallback(
+    (e) => {
+      if (!canSlide) return;
 
-  const canGoPrev = currentSlide > 0;
-  const canGoNext = currentSlide < totalSlides - 1;
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(delta) < 10) return;
 
-  const goToSlide = (index) => {
-    if (index >= 0 && index < totalSlides) {
-      setCurrentSlide(index);
+      e.preventDefault();
+
+      if (wheelLockRef.current) return;
+      wheelLockRef.current = true;
+
+      if (delta > 0) {
+        goToNext();
+      } else {
+        goToPrev();
+      }
+
+      setTimeout(() => {
+        wheelLockRef.current = false;
+      }, WHEEL_THROTTLE_MS);
+    },
+    [canSlide, goToNext, goToPrev]
+  );
+
+  useEffect(() => {
+    const node = sliderRef.current;
+    if (!node) return undefined;
+
+    node.addEventListener("wheel", handleWheel, { passive: false });
+    return () => node.removeEventListener("wheel", handleWheel);
+  }, [handleWheel]);
+
+  /* ---------- Touch swipe (mobile) + mouse click-drag (desktop) ---------- */
+  const handlePointerDown = useCallback(
+    (e) => {
+      if (!canSlide) return;
+      // Ignore right/middle mouse buttons
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      // Don't hijack clicks on buttons/links/inputs inside cards (e.g. "more", play/pause)
+      if (e.target.closest("button, a, input, textarea, select")) return;
+
+      dragStartXRef.current = e.clientX;
+      trackWidthRef.current = trackRef.current?.offsetWidth || 1;
+      setIsDragging(true);
+      setDragOffsetPx(0);
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    },
+    [canSlide]
+  );
+
+  const handlePointerMove = useCallback(
+    (e) => {
+      if (!isDragging) return;
+      setDragOffsetPx(e.clientX - dragStartXRef.current);
+    },
+    [isDragging]
+  );
+
+  const endDrag = useCallback(() => {
+    if (!isDragging) return;
+
+    if (Math.abs(dragOffsetPx) > DRAG_THRESHOLD_PX) {
+      if (dragOffsetPx < 0) {
+        goToNext();
+      } else {
+        goToPrev();
+      }
     }
-  };
 
-  const translatePercent = -currentSlide * 100;
+    setIsDragging(false);
+    setDragOffsetPx(0);
+  }, [isDragging, dragOffsetPx, goToNext, goToPrev]);
+
+  const cardWidthPercent = 100 / cardsPerView;
+  const baseTranslatePercent = -currentIndex * cardWidthPercent;
+
+  // Convert the live drag distance (px) into an extra % offset on top of the base position
+  const dragPercent = trackWidthRef.current
+    ? (dragOffsetPx / trackWidthRef.current) * 100
+    : 0;
+  const translatePercent = baseTranslatePercent + dragPercent;
 
   return (
     <section className="py-24 bg-white text-black overflow-hidden">
@@ -77,100 +176,67 @@ const Initiatives = () => {
               Initiatives we proudly completed
             </h3>
           </div>
-
           <Link
             to="/event"
             className="hidden md:flex text-[15px] items-center gap-1 text-orange-600 font-bold hover:underline"
           >
-            View all projects <LiaArrowRightSolid size={22} />
+            View all Initiatives <LiaArrowRightSolid size={22} />
           </Link>
         </div>
 
-        {/* ===== Unified Slider ===== */}
-        <div className="relative overflow-hidden">
+        {/* Slider */}
+        <div
+          ref={sliderRef}
+          className={`relative overflow-hidden ${canSlide ? "cursor-grab active:cursor-grabbing" : ""}`}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => {
+            setIsHovered(false);
+            endDrag();
+          }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          style={{ touchAction: "pan-y" }}
+        >
           <div
-            className="
-              flex will-change-transform
-              transition-transform duration-700 ease-out
-            "
-            style={{ transform: `translateX(${translatePercent}%)` }}
+            ref={trackRef}
+            className="flex will-change-transform select-none"
+            style={{
+              transform: `translateX(${translatePercent}%)`,
+              transition: isDragging ? "none" : "transform 700ms ease-out",
+            }}
           >
-            {(loading ? Array.from({ length: totalItems }) : events).map((item, idx) => (
-              <div
-                key={loading ? `skeleton-${idx}` : (item._id || idx)}
-                className="min-w-full sm:min-w-1/2 lg:min-w-1/3 px-3"
-              >
-                {loading ? (
-                  <ProjectCard loading />
-                ) : (
-                  <ProjectCard
-                    mediaUrl={item.mediaUrl}
-                    mediaType={item.mediaType}
-                    title={item.title}
-                    description={item.description}
-                    city={item.location}
-                    date={item.date}
-                    category={item.organizedBy}
-                  />
-                )}
-              </div>
-            ))}
+            {(loading ? Array.from({ length: totalItems }) : events).map((item, idx) => {
+              const cardId = loading ? `skeleton-${idx}` : item._id || idx;
+              return (
+                <div key={cardId} className="min-w-full sm:min-w-1/2 lg:min-w-1/3 px-3">
+                  {loading ? (
+                    <ProjectCard loading />
+                  ) : (
+                    <ProjectCard
+                      bannerImage={item.bannerImage}
+                      bannerType={item.bannerType}
+                      title={item.title}
+                      description={item.shortDescription}
+                      venue={item.venue}
+                      date={item.date}
+                      category={item.category}
+                      organizedBy={item.organizedBy}
+                      galleryImages={item.galleryImages}
+                      videoUrls={item.videoUrls}
+                      isActive={activePlayingId === cardId}
+                      onPlayStart={() => setActivePlayingId(cardId)}
+                      onStop={() =>
+                        setActivePlayingId((prev) => (prev === cardId ? null : prev))
+                      }
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
-
-        {/* ===== Navigation – same on all devices ===== */}
-        {totalSlides > 1 && (
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mt-10  flex-wrap">
-            <button
-              onClick={() => goToSlide(currentSlide - 1)}
-              disabled={!canGoPrev}
-              aria-label="Previous slide"
-              className={`
-                flex h-11 text-[8px] w-11 items-center justify-center rounded-full transition-all
-                ${
-                  canGoPrev
-                    ? "bg-orange-100 text-orange-700 hover:bg-orange-200 active:scale-95"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                }
-              `}
-            >
-              <LiaAngleLeftSolid size={22} />
-            </button>
-
-            {Array.from({ length: totalSlides }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goToSlide(i)}
-                className={`
-                  h-11 w-11 text-[15px] rounded-full text-sm font-semibold transition-all
-                  ${
-                    currentSlide === i
-                      ? "bg-orange-600 text-white shadow-md scale-105"
-                      : "bg-orange-50 text-orange-800 hover:bg-orange-100 hover:scale-105 active:scale-95"
-                  }
-                `}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button
-              onClick={() => goToSlide(currentSlide + 1)}
-              disabled={!canGoNext}
-              aria-label="Next slide"
-              className={`
-                flex h-11 w-11 text-[10px] items-center justify-center rounded-full transition-all
-                ${
-                  canGoNext
-                    ? "bg-orange-100 text-orange-700 hover:bg-orange-200 active:scale-95"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                }
-              `}
-            >
-              <LiaAngleRightSolid size={22} />
-            </button>
-          </div>
-        )}
       </div>
     </section>
   );

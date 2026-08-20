@@ -25,13 +25,17 @@ const userImpactSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-
       .addCase(fetchImpactStories.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchImpactStories.fulfilled, (state, action) => {
         state.loading = false;
         state.stories = action.payload;
+      })
+      .addCase(fetchImpactStories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

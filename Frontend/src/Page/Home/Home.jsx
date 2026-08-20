@@ -4,12 +4,10 @@ import MissionSection from './Components/MissionSection'
 import Initiatives from './Components/Initiatives'
 import FeaturedStory from './Components/FeaturedStory'
 import TeamSection from './Components/TeamSection'
-import GetInvolved from './Components/GetInvolved'
 import FAQSection from './Components/FAQSection'
 import CTASection from './Components/CTASection'
 import BackToTop from './Components/BackToTop'
 import EventNotifyed from './Components/EventNotifyed'
-import ImpactFeed from './Components/ImpactFeed'
 
 const Home = () => {
   return (
@@ -20,9 +18,9 @@ const Home = () => {
         <Initiatives/>
         <FeaturedStory/>
         <TeamSection/>
-        <GetInvolved/>
+      
         <FAQSection/>
-        <ImpactFeed/>
+        
         <CTASection/>
         <BackToTop/>
     </div>

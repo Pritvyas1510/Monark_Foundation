@@ -1,5 +1,5 @@
 import express from "express";
-import upload from "../middleware/uploadEventMedia.js";
+import upload from "../middleware/uploadMedia.js";
 import {
   createStory,
   getPublicStories,
@@ -24,11 +24,11 @@ router.post(
   "/",
   auth,
   allowRoles("admin"),
-  upload.single("media"),   // ✅ multer used here
+  upload.single("media"), // ✅ now backed by the generic uploadMedia middleware
   createStory
 );
 
-router.put("/:id", auth, allowRoles("admin"),upload.single("media") , updateStory);
+router.put("/:id", auth, allowRoles("admin"), upload.single("media"), updateStory);
 router.delete("/:id", auth, allowRoles("admin"), deleteStory);
 router.patch(
   "/:id",
@@ -36,6 +36,5 @@ router.patch(
   allowRoles("admin"),
   togglePublishStory
 );
-
 
 export default router;

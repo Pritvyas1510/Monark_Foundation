@@ -1,58 +1,111 @@
 // src/components/TeamSection.jsx
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import TeamMemberCard from "../../../components/TeamMemberCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import Hasmukh_Sir from "../../../../Public/Image/Hasmukh_Sir.JPG";
+import Hasmukh_Sir from "../../../../Public/Image/Hasmukh_Sir.jpeg";
 import satish_sir from "../../../../Public/Image/satish_sir.JPG";
-import monark_sir from "../../../../Public/Image/Monark_sir.png";
-import zeel_sir from "../../../../Public/Image/Zeel_sir.jpeg"
+import monark_sir from "../../../../Public/Image/Monark_sir.jpeg";
+import zeel_sir from "../../../../Public/Image/Zeel_sir.jpeg";
+import Varshaben from "../../../../Public/Image/Varshaben.jpeg"
+import Urmilaben from "../../../../Public/Image/Urmilaben.jpeg"
+
+const AUTO_SLIDE_MS = 30000; // change slide every 30 seconds
 
 const TeamSection = () => {
-  const teamMembers = [
-    {
-      id: 1,
-      image: Hasmukh_Sir,
-      name: "Dr.Hasmukh Goswami",
-      position: "President",
-      bio: "Strategic social leader advancing community empowerment and sustainable development initiatives.",
-      email: "vyasprit962@gmail.com",
-    },
-    {
-      id: 2,
-      image: satish_sir,
-      name: "Dr.Satish Goswami",
-      position: "Vice President",
-      bio: "Dedicated leader driving education reform and women empowerment programs nationwide.",
-      email: "",
-    },
-    {
-      id: 3,
-      image: zeel_sir,
-      name: "Zeel Goswami",
-      position: "Director-MRDC",
-      bio: "Leads MRDC initiatives through strategic planning, team coordination, and strong community partnerships.",
-      email: "",
-    },
-    {
-      id: 4,
-      image: monark_sir,
-      name: "Monark Goswami",
-      position: "CEO",
-      bio: "Leads strategic growth, outreach initiatives, and operational excellence for the foundation.",
-      email: "",
-    },
-  ];
-
-  /* ---------- Mobile Slider State ---------- */
-  const [mobileIndex, setMobileIndex] = useState(0);
-
-  const nextSlide = () => {
-    setMobileIndex((prev) => (prev < teamMembers.length - 1 ? prev + 1 : prev));
+ const teamMembers = [
+  {
+    id: 1,
+    image: monark_sir,
+    name: "Monark Goswami",
+    position: "Founder",
+    bio: "Founder of Monark Foundation, dedicated to creating lasting social impact through education, community development, and compassionate leadership that empowers individuals to build a brighter future.",
+    email: "",
+  },
+  {
+    id: 2,
+    image: Hasmukh_Sir,
+    name: "Dr. Hasmukh Goswami",
+    position: "Board Member",
+    bio: "Provides strategic guidance and visionary leadership to strengthen the Foundation's mission, ensuring sustainable growth and meaningful community impact through education and service.",
+    email: "vyasprit962@gmail.com",
+  },
+  {
+    id: 3,
+    image: satish_sir,
+    name: "Dr. Satish Goswami",
+    position: "Board Member",
+    bio: "Contributes valuable expertise and leadership to advance the Foundation's initiatives, promoting education, innovation, and community welfare with dedication and integrity.",
+    email: "",
+  },
+  {
+    id: 4,
+    image: zeel_sir,
+    name: "Zeel Goswami",
+    position: "Board Member",
+    bio: "Supports the Foundation's vision by encouraging youth engagement, social responsibility, and impactful programs that create positive and lasting change in society.",
+    email: "",
+  },
+  {
+    id: 5,
+    image: Varshaben,
+    name: "Dr. Varshaben H. Goswami",
+    position: "Board Member",
+    bio: "Committed to empowering communities through educational initiatives, women’s development, and compassionate service, helping transform lives with purpose and care.",
+    email: "",
+  },
+  {
+    id: 6,
+    image: Urmilaben,
+    name: "Dr. Urmilaben S. Goswami",
+    position: "Board Member",
+    bio: "Dedicated to fostering inclusive growth and social well-being by supporting initiatives that inspire learning, equality, and sustainable community development.",
+    email: "",
+  },
+];
+  /* ---------- Responsive items-per-slide (3 on desktop) ---------- */
+  const getItemsPerView = () => {
+    if (typeof window === "undefined") return 3;
+    if (window.innerWidth < 640) return 1; // mobile
+    if (window.innerWidth < 1024) return 2; // tablet
+    return 3; // desktop -> 3 box slider
   };
 
-  const prevSlide = () => {
-    setMobileIndex((prev) => (prev > 0 ? prev - 1 : prev));
-  };
+  const [itemsPerView, setItemsPerView] = useState(getItemsPerView());
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const autoSlideRef = useRef(null);
+
+  // Recalculate items-per-view on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerView(getItemsPerView());
+      setSlideIndex(0); // reset to first slide to avoid out-of-range index
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Build slide "pages" — each page holds `itemsPerView` cards
+  const totalSlides = Math.ceil(teamMembers.length / itemsPerView);
+
+  const nextSlide = useCallback(() => {
+    setSlideIndex((prev) => (prev + 1) % totalSlides);
+  }, [totalSlides]);
+
+  const prevSlide = useCallback(() => {
+    setSlideIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
+  }, [totalSlides]);
+
+  // Auto-slide every 20 seconds, loops back to start, pauses on hover
+  useEffect(() => {
+    if (isHovered) return undefined;
+
+    autoSlideRef.current = setInterval(() => {
+      nextSlide();
+    }, AUTO_SLIDE_MS);
+
+    return () => clearInterval(autoSlideRef.current);
+  }, [nextSlide, isHovered]);
 
   return (
     <section className="py-24 bg-white">
@@ -67,48 +120,74 @@ const TeamSection = () => {
           </h3>
         </div>
 
-        {/* ================= Desktop Grid ================= */}
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {teamMembers.map((member) => (
-            <TeamMemberCard key={member.id} {...member} />
-          ))}
-        </div>
-
-        {/* ================= Mobile Slider ================= */}
-        <div className="md:hidden">
+        {/* ================= 3-Box Slider ================= */}
+        <div
+          className="relative"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <div className="overflow-hidden">
             <div
-              className="flex transition-transform duration-500 ease-in-out"
+              className="flex transition-transform duration-700 ease-in-out"
               style={{
-                transform: `translateX(-${mobileIndex * 100}%)`,
+                width: `${totalSlides * 100}%`,
+                transform: `translateX(-${slideIndex * (100 / totalSlides)}%)`,
               }}
             >
-              {teamMembers.map((member) => (
-                <div key={member.id} className="min-w-full px-1">
-                  <TeamMemberCard {...member} />
-                </div>
-              ))}
+              {Array.from({ length: totalSlides }).map((_, pageIdx) => {
+                const start = pageIdx * itemsPerView;
+                const pageItems = teamMembers.slice(start, start + itemsPerView);
+                return (
+                  <div
+                    key={pageIdx}
+                    className="flex gap-8 px-1"
+                    style={{ width: `${100 / totalSlides}%` }}
+                  >
+                    {pageItems.map((member) => (
+                      <div
+                        key={member.id}
+                        className="flex-1"
+                        style={{ minWidth: 0 }}
+                      >
+                        <TeamMemberCard {...member} />
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* Mobile Controls */}
-          <div className="flex justify-center items-center gap-6 mt-6">
+          {/* Bottom Navigation Controls */}
+          <div className="flex justify-center items-center gap-6 mt-10">
             <button
               onClick={prevSlide}
-              disabled={mobileIndex === 0}
-              className="p-3 rounded-full bg-gray-100 text-gray-600 disabled:opacity-40"
+              aria-label="Previous slide"
+              className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-orange-100 hover:text-orange-600 transition-colors"
             >
               <FaChevronLeft />
             </button>
 
-            <span className="text-sm font-semibold text-black">
-              {mobileIndex + 1} / {teamMembers.length}
-            </span>
+            {/* Dots */}
+            <div className="flex gap-2">
+              {Array.from({ length: totalSlides }).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSlideIndex(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                  className={`h-2.5 rounded-full transition-all ${
+                    idx === slideIndex
+                      ? "w-6 bg-orange-600"
+                      : "w-2.5 bg-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
 
             <button
               onClick={nextSlide}
-              disabled={mobileIndex === teamMembers.length - 1}
-              className="p-3 rounded-full bg-gray-100 text-gray-600 disabled:opacity-40"
+              aria-label="Next slide"
+              className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-orange-100 hover:text-orange-600 transition-colors"
             >
               <FaChevronRight />
             </button>

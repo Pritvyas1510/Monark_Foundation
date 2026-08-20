@@ -21,12 +21,13 @@ const Countdown = ({ eventDate }) => {
     }, 1000);
 
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventDate]);
 
   if (!timeLeft) return null;
 
   const boxStyle =
-    "w-20 h-20 md:w-24 md:h-24 rounded-xl flex items-center justify-center shadow-lg";
+    "w-20 h-20 md:w-24 md:h-24 rounded-xl flex items-center justify-center shadow-lg transition-transform";
 
   return (
     <div className="flex justify-center items-center gap-4 md:gap-6 flex-wrap">
@@ -40,16 +41,16 @@ const Countdown = ({ eventDate }) => {
           <div
             className={`${boxStyle} ${
               item.bordered
-                ? "bg-white border-2 border-orange-500 text-orange-500"
-                : "bg-orange-500 text-white shadow-orange-300"
+                ? "bg-white/95 backdrop-blur-sm border-2 border-orange-500 text-orange-500"
+                : "bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-orange-500/40"
             }`}
           >
-            <span className="text-3xl md:text-4xl font-black">
+            <span className="text-3xl md:text-4xl font-black tabular-nums">
               {String(item.value).padStart(2, "0")}
             </span>
           </div>
 
-          <span className="mt-3 text-xs font-bold uppercase tracking-widest text-orange-500">
+          <span className="mt-3 text-xs font-bold uppercase tracking-widest text-orange-400">
             {item.label}
           </span>
         </div>

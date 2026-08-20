@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import registerReducer from "./slice/registerslice.js";
 import eventReducer from "./slice/Events.slice.js";
 import editMemberReducer from "./slice/editMember.slice.js"
-import userimpacetReducer from "./slice/Impactstory.slice.js"
+import userImpactReducer from "./slice/ImpactStory.slice.js";
 import testimonialReducer from "./slice/Testimonial.slice.js"
 import regionalHeadsReducer from"./slice/RegionalHeads.slice.js"
 
@@ -11,7 +11,7 @@ const store = configureStore({
     memberRegister: registerReducer,
     event: eventReducer,
     editMember: editMemberReducer,
-    impact:userimpacetReducer,
+     userImpact: userImpactReducer,
     testimonial:testimonialReducer,
     regionalHeads: regionalHeadsReducer,
   },

@@ -6,6 +6,14 @@ import {
   deleteImpactStory,
 } from "../../Redux/slice/ImpactStory.slice";
 import { Link } from "react-router-dom";
+import {
+  FaEdit,
+  FaTrashAlt,
+  FaExternalLinkAlt,
+  FaEye,
+  FaEyeSlash,
+  FaPlus,
+} from "react-icons/fa";
 
 const ImpactStories = () => {
   const dispatch = useDispatch();
@@ -35,18 +43,20 @@ const ImpactStories = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 relative">
-
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center gap-4 mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">
-          Impact Stories
-        </h2>
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Impact Stories</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage and view all impact stories
+          </p>
+        </div>
 
-        <div className="flex gap-4 md:ml-auto">
+        <div className="flex gap-3 md:ml-auto">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-4 py-2 border rounded-lg text-sm font-medium focus:ring-2 focus:ring-orange-400 outline-none"
+            className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-orange-400 outline-none bg-white"
           >
             <option value="all">All Stories</option>
             <option value="published">Published</option>
@@ -54,16 +64,15 @@ const ImpactStories = () => {
           </select>
 
           <Link to="/createimpactstory">
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold shadow">
-              + Create Story
+            <button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-semibold shadow-sm transition">
+              <FaPlus size={12} /> Add Story
             </button>
           </Link>
         </div>
       </div>
 
       {/* GRID */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredStories.map((story) => {
           const isExpanded = expandedId === story._id;
           const shortText = story.description.slice(0, 120);
@@ -71,7 +80,7 @@ const ImpactStories = () => {
           return (
             <div
               key={story._id}
-              className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden flex flex-col"
+              className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col border border-gray-100"
             >
               {/* IMAGE */}
               <div className="relative h-48">
@@ -82,10 +91,10 @@ const ImpactStories = () => {
                 />
 
                 <span
-                  className={`absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-full ${
+                  className={`absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-full shadow-sm ${
                     story.isPublished
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-800 text-white"
+                      ? "bg-orange-500 text-white"
+                      : "bg-gray-800/90 text-white"
                   }`}
                 >
                   {story.isPublished ? "Published" : "Draft"}
@@ -94,35 +103,39 @@ const ImpactStories = () => {
 
               {/* CONTENT */}
               <div className="p-5 flex flex-col flex-1">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">
                   {story.title}
                 </h3>
 
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-xs text-gray-500 mb-3">
+                  Status:{" "}
+                  <span className="font-semibold text-gray-700">
+                    {story.isPublished ? "Live on site" : "Not published"}
+                  </span>
+                </p>
+
+                <p className="text-sm text-gray-600 leading-relaxed flex-1">
                   {isExpanded ? story.description : `${shortText}...`}
                 </p>
 
                 {story.description.length > 120 && (
                   <button
-                    onClick={() =>
-                      setExpandedId(isExpanded ? null : story._id)
-                    }
-                    className="text-orange-600 text-sm font-semibold mt-2 w-fit"
+                    onClick={() => setExpandedId(isExpanded ? null : story._id)}
+                    className="text-orange-600 text-sm font-semibold mt-2 w-fit hover:underline"
                   >
                     {isExpanded ? "See less" : "See more"}
                   </button>
                 )}
 
-                {/* ACTIONS */}
-                <div className="mt-auto pt-4 flex items-center gap-3">
-
+                {/* SECONDARY ACTIONS */}
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
                   <a
                     href={story.articleUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-orange-600 font-semibold text-sm hover:underline"
+                    className="flex items-center gap-1.5 text-orange-600 font-semibold text-sm hover:underline"
                   >
-                    Read Article
+                    Read Article <FaExternalLinkAlt size={11} />
                   </a>
 
                   <button
@@ -134,26 +147,37 @@ const ImpactStories = () => {
                         })
                       )
                     }
-                    className={`text-sm px-3 py-1.5 rounded-md font-semibold transition ${
+                    className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold transition ${
                       story.isPublished
-                        ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-                        : "bg-green-100 text-green-700 hover:bg-green-200"
+                        ? "bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
+                        : "bg-green-50 text-green-700 hover:bg-green-100"
                     }`}
                   >
-                    {story.isPublished ? "Unpublish" : "Publish"}
+                    {story.isPublished ? (
+                      <>
+                        <FaEyeSlash size={12} /> Unpublish
+                      </>
+                    ) : (
+                      <>
+                        <FaEye size={12} /> Publish
+                      </>
+                    )}
                   </button>
+                </div>
 
-                  <Link to={`/updateimpactstory/${story._id}`}>
-                    <button className="ml-auto text-sm text-orange-600 hover:underline">
-                      Edit
+                {/* EDIT / DELETE — same pill-button pattern as the Events cards */}
+                <div className="flex gap-3 mt-3">
+                  <Link to={`/updateimpactstory/${story._id}`} className="flex-1">
+                    <button className="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 text-sm font-semibold py-2 rounded-lg transition">
+                      <FaEdit size={13} /> Edit
                     </button>
                   </Link>
 
                   <button
                     onClick={() => setDeleteId(story._id)}
-                    className="ml-auto text-sm text-red-600 hover:underline"
+                    className="flex-1 flex items-center justify-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 text-sm font-semibold py-2 rounded-lg transition"
                   >
-                    Delete
+                    <FaTrashAlt size={13} /> Delete
                   </button>
                 </div>
               </div>
@@ -174,9 +198,7 @@ const ImpactStories = () => {
       {deleteId && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-80 text-center shadow-lg animate-scaleIn">
-            <h3 className="text-lg font-bold mb-2">
-              Delete Story?
-            </h3>
+            <h3 className="text-lg font-bold mb-2">Delete Story?</h3>
             <p className="text-sm text-gray-500 mb-6">
               This action cannot be undone.
             </p>
@@ -184,7 +206,7 @@ const ImpactStories = () => {
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-4 py-2 border rounded-lg"
+                className="px-4 py-2 border rounded-lg font-medium hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
@@ -194,7 +216,7 @@ const ImpactStories = () => {
                   dispatch(deleteImpactStory(deleteId));
                   setDeleteId(null);
                 }}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition"
               >
                 Delete
               </button>

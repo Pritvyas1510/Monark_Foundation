@@ -1,8 +1,9 @@
 import express from "express";
-import upload from "../middleware/uploadEventMedia.js";
+import { eventUpload } from "../middleware/uploadEventMedia.js";
 import {
   createEvent,
   getEvents,
+  getEventById,
   updateEvent,
   deleteEvent,
 } from "../controller/Event.controller.js";
@@ -16,19 +17,22 @@ router.post(
   "/",
   adminAuth,
   allowRoles("admin"),
-  upload.single("media"),
+  eventUpload,
   createEvent
 );
 
 // GET ALL EVENTS
 router.get("/", getEvents);
 
+// GET SINGLE EVENT
+router.get("/:id", getEventById);
+
 // UPDATE EVENT
 router.put(
   "/:id",
   adminAuth,
   allowRoles("admin"),
-  upload.single("media"),
+  eventUpload,
   updateEvent
 );
 

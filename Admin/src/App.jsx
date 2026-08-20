@@ -12,6 +12,7 @@ import EventUpdate from "./Page/Events/EventUpdate";
 
 import ImpactStory from "./Page/Impact/ImpactStory";
 import CreateImpactStory from "./Page/Impact/CreateImpactStory";
+import Updatestory from "./Page/Impact/Updateimpactstory";
 
 import Story from "./Page/Story/Story";
 import CreateStory from "./Page/Story/CreateStory";
@@ -81,6 +82,16 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+         <Route
+          path="/updateimpactstory/:id"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Updatestory/>
+            </ProtectedRoute>
+          }
+        />
+
 
         <Route
           path="/story"
