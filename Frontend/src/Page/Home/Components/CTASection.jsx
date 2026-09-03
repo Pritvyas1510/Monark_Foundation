@@ -3,6 +3,7 @@ import React from "react";
 import { FaHandsHelping, FaUsers, FaCheckCircle } from "react-icons/fa";
 import { HiArrowRight } from "react-icons/hi";
 import {Link} from "react-router-dom"
+import Joinus from "../../../../Public/Joinus/join-us.jpg"
 
 const JoinUs = () => {
   return (
@@ -18,7 +19,7 @@ const JoinUs = () => {
           {/* LEFT SIDE IMAGE */}
           <div className="lg:w-1/2 relative group overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=1000&q=80"
+              src={Joinus}
               alt="Volunteers helping children"
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
@@ -51,12 +52,12 @@ const JoinUs = () => {
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-1 bg-orange-500/10 text-orange-400 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border border-orange-500/20">
                 <span className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span>
-                Membership Open
+               Join Our Mission
               </div>
 
               {/* Heading */}
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
-                Join Our <span className="text-orange-400">Mission</span>
+                Be a Helping <span className="text-orange-400">Hand</span>
               </h2>
 
               {/* Description */}
@@ -91,33 +92,7 @@ const JoinUs = () => {
                 </div>
               </div>
 
-              {/* Member Count */}
-              <div className="mt-10 flex items-center gap-4">
-                <div className="flex -space-x-3">
-                  <img
-                    src="https://randomuser.me/api/portraits/women/44.jpg"
-                    alt="Member"
-                    className="w-10 h-10 rounded-full border-2 border-slate-900 object-cover"
-                  />
-                  <img
-                    src="https://randomuser.me/api/portraits/men/32.jpg"
-                    alt="Member"
-                    className="w-10 h-10 rounded-full border-2 border-slate-900 object-cover"
-                  />
-                  <img
-                    src="https://randomuser.me/api/portraits/women/68.jpg"
-                    alt="Member"
-                    className="w-10 h-10 rounded-full border-2 border-slate-900 object-cover"
-                  />
-                  <div className="w-10 h-10 rounded-full border-2 border-slate-900 bg-orange-500 flex items-center justify-center text-[10px] text-white font-bold">
-                    +5k
-                  </div>
-                </div>
-                <p className="text-slate-400 text-sm">
-                  Join 5,000+ active members
-                </p>
-              </div>
-
+              
             </div>
           </div>
         </div>

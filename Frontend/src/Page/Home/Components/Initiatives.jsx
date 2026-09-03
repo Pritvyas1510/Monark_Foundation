@@ -164,15 +164,15 @@ const Initiatives = () => {
   const translatePercent = baseTranslatePercent + dragPercent;
 
   return (
-    <section className="py-24 bg-white text-black overflow-hidden">
+    <section className="py-24 bg-gray-100 text-black overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-5">
           <div>
-            <h2 className="text-orange-600 text-sm font-bold text-[10px] uppercase tracking-widest mb-3">
+            <h2 className="text-orange-600 text-lg font-bold text-[10px] uppercase tracking-widest mb-3">
               From Vision to Reality
             </h2>
-            <h3 className="text-2xl md:text-2xl font-bold text-gray-900">
+            <h3 className="text-3xl md:text-2xl font-bold text-gray-900">
               Initiatives we proudly completed
             </h3>
           </div>

@@ -215,8 +215,11 @@ const EventNotifyed = () => {
               />
             </button>
           </div>
+          
         </div>
+       
       </div>
+     
     </div>
   );
 };

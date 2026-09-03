@@ -27,7 +27,7 @@ const TeamSection = () => {
     name: "Dr. Hasmukh Goswami",
     position: "Board Member",
     bio: "Provides strategic guidance and visionary leadership to strengthen the Foundation's mission, ensuring sustainable growth and meaningful community impact through education and service.",
-    email: "vyasprit962@gmail.com",
+    email: "",
   },
   {
     id: 3,

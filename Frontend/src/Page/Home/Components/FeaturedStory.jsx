@@ -56,7 +56,7 @@ const FeaturedStory = () => {
   const story = publishedStories[index];
 
   return (
-    <section className="py-24 bg-background-light dark:bg-background-dark relative overflow-hidden">
+    <section className="py-24 mb-16 md:mb-20 bg-background-light dark:bg-background-dark relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-10 lg:mb-14">
           <span className="text-primary font-bold tracking-widest text-xs uppercase block mb-2">

@@ -93,7 +93,7 @@ const ExecutiveCard = ({ name, title, quote, imgSrc, linkedin, email }) => {
 
 const ExecutiveLeadership = () => {
   return (
-    <section className="py-16 md:py-20 bg-white" id="executive-leadership">
+    <section className="py-5 mb-5 md:py-5 bg-gray-100" id="executive-leadership">
       <div className="container mx-auto px-5 md:px-6 text-center mb-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#ee8c2b] mb-2">
           Leadership

@@ -147,7 +147,7 @@ body {
           {/* ===== Heading ===== */}
           <div className="relative z-10">
             <h2 className="text-3xl font-bold mb-3 leading-tight">
-              Monark Foundation Membership
+             Monark Foundation Registration
             </h2>
             <p className="text-sm text-white/85 mb-6 leading-relaxed max-w-sm">
               Join us to create social impact across communities — education,

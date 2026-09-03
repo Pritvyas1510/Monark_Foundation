@@ -1,0 +1,156 @@
+/* ============ POSITIONING ============
+   Sits directly below EventNotifyed on the right side (that widget occupies
+   roughly top: 6rem down to ~25rem depending on its content, so this starts
+   just past it). Adjust `top` here if your notification card's height
+   differs noticeably. */
+.register-btn-wrapper {
+  top: 27rem;
+  right: 1.5rem;
+  left: auto;
+  bottom: auto;
+  animation: registerSlideIn 0.5s ease-out, registerFloat 3s ease-in-out 0.5s infinite;
+}
+
+@media (max-width: 480px) {
+  .register-btn-wrapper {
+    top: auto;
+    bottom: 6.5rem;
+    left: 1rem;
+    right: 1rem;
+    animation: registerSlideIn 0.5s ease-out;
+  }
+
+  .register-btn-wrapper .register-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============ ENTRANCE ============ */
+@keyframes registerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ============ IDLE FLOAT (desktop/tablet only) ============ */
+@keyframes registerFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ============ ANIMATED GRADIENT BACKGROUND ============ */
+@keyframes registerGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.register-btn-bg {
+  z-index: 0;
+  background: linear-gradient(
+    120deg,
+    #f97316,
+    #ef4444,
+    #f97316,
+    #fb923c
+  );
+  background-size: 300% 300%;
+  animation: registerGradientShift 4s ease infinite;
+  transition: filter 0.3s ease;
+}
+
+.register-btn:hover .register-btn-bg {
+  filter: brightness(1.12) saturate(1.15);
+}
+
+/* ============ HOVER LIFT + SCALE ============ */
+.register-btn {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
+}
+
+.register-btn:hover {
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 16px 32px -6px rgba(239, 68, 68, 0.5),
+    0 0 0 4px rgba(249, 115, 22, 0.12);
+}
+
+.register-btn:active {
+  transform: translateY(-1px) scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* ============ ICON MICRO-BOUNCE ON HOVER ============ */
+.register-btn-icon {
+  z-index: 1;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.3s ease;
+}
+
+.register-btn:hover .register-btn-icon {
+  transform: rotate(-8deg) scale(1.12);
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ============ DIAGONAL SHINE SWEEP ON HOVER ============ */
+.register-btn-shine {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.register-btn-shine-bar {
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  transition: left 0.65s ease;
+}
+
+.register-btn:hover .register-btn-shine-bar {
+  left: 125%;
+}
+
+/* ============ PULSING GLOW RING ============ */
+@keyframes registerPing {
+  75%,
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+.register-btn-ping {
+  z-index: 0;
+  animation: registerPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: 0.55;
+}
+
+/* text/arrow layers need to sit above bg + shine */
+.register-btn > span:not(.register-btn-ping):not(.register-btn-bg):not(.register-btn-shine) {
+  z-index: 1;
+}

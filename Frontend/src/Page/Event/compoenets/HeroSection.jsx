@@ -30,20 +30,16 @@ const formatShortDate = (dt) =>
     ? dt.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
     : "";
 
-// Pool every visual asset an event has — banner (image or video), gallery
-// images, and any extra videos — so the hero isn't limited to whatever
-// bannerType happens to be set to.
-const buildMediaPool = (event) => {
+// Pool only video assets — banner video (if bannerType is "video") and any
+// extra videos in videoUrls. Images/galleryImages are ignored for the
+// background; we only ever want video playing behind the hero content.
+const buildVideoPool = (event) => {
   if (!event) return [];
   const pool = [];
-  if (event.bannerImage) {
-    pool.push({
-      type: event.bannerType === "video" ? "video" : "image",
-      src: event.bannerImage,
-    });
+  if (event.bannerImage && event.bannerType === "video") {
+    pool.push(event.bannerImage);
   }
-  (event.galleryImages || []).forEach((src) => pool.push({ type: "image", src }));
-  (event.videoUrls || []).forEach((src) => pool.push({ type: "video", src }));
+  (event.videoUrls || []).forEach((src) => pool.push(src));
   return pool;
 };
 
@@ -80,12 +76,11 @@ const HeroSection = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [upcomingEvents.length]);
 
-  // Every time the slide changes to a new event, randomly pick one asset
-  // from its full media pool (banner image, banner video, gallery images,
-  // extra videos) — so a video-and-photo event doesn't always show the
-  // same one on repeat visits.
+  // Every time the slide changes to a new event, randomly pick one video
+  // from its video pool (banner video + extra videoUrls) — so events with
+  // multiple videos don't always show the same one on repeat visits.
   useEffect(() => {
-    const pool = buildMediaPool(event);
+    const pool = buildVideoPool(event);
     if (!pool.length) {
       setActiveMedia(null);
       return;
@@ -133,24 +128,17 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-[700px] flex flex-col items-center justify-center px-4 py-24 text-center overflow-hidden">
-      {/* Background Media */}
+      {/* Background Media — video only */}
       <div className="absolute inset-0 z-0">
-        {activeMedia?.type === "video" ? (
+        {activeMedia ? (
           <video
-            key={activeMedia.src}
-            src={activeMedia.src}
+            key={activeMedia}
+            src={activeMedia}
             autoPlay
             muted
             loop
             playsInline
-            className="w-full h-full object-cover hero-kenburns"
-          />
-        ) : activeMedia?.src ? (
-          <img
-            key={activeMedia.src}
-            src={activeMedia.src}
-            alt={event.title}
-            className="w-full h-full object-cover hero-kenburns"
+            className="w-full h-full object-cover"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-[#3a2416] to-[#23170f]" />

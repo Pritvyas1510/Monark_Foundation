@@ -1,6 +1,14 @@
 // src/components/Footer.jsx
+
 import { Link } from "react-router-dom";
-import { FaFacebookF, FaInstagram, FaTwitter, FaArrowRight } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaYoutube,
+  FaEnvelope,
+  FaArrowRight,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 
 const quickLinks = [
   { to: "/", label: "Home" },
@@ -10,14 +18,43 @@ const quickLinks = [
   { to: "/register", label: "Register" },
 ];
 
+const CONTACT_EMAIL = "monarkfoundation150@gmail.com";
+
+const CONTACT_ADDRESS =
+  "At. & Post Vahelal, Naroda-Dahegam Road, Ta. Dascroi, Dist. Ahmedabad-382330 (Gujarat) India.";
+
+// Opens Gmail's web compose window directly (in a new tab), pre-filled
+// with the recipient — rather than mailto:, which just hands off to
+// whatever mail app/client is registered on the visitor's device.
+const gmailComposeUrl = (to) =>
+  `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}`;
+
 const socialLinks = [
   {
     href: "https://www.instagram.com/monarkfoundation?igsh=a3p6aXc4cGd1cmdy",
     label: "Instagram",
     Icon: FaInstagram,
   },
-  { href: "#", label: "Facebook", Icon: FaFacebookF },
-  { href: "#", label: "Twitter", Icon: FaTwitter },
+
+  // TODO: replace with the actual Facebook page URL
+  {
+    href: "#",
+    label: "Facebook",
+    Icon: FaFacebookF,
+  },
+
+  // TODO: replace with the actual YouTube channel URL
+  {
+    href: "#",
+    label: "YouTube",
+    Icon: FaYoutube,
+  },
+
+  {
+    href: gmailComposeUrl(CONTACT_EMAIL),
+    label: "Email",
+    Icon: FaEnvelope,
+  },
 ];
 
 const Footer = () => {
@@ -64,6 +101,7 @@ const Footer = () => {
               Quick Links
               <span className="absolute -bottom-2 left-0 h-0.5 w-8 bg-orange-500 rounded-full" />
             </h4>
+
             <ul className="space-y-3 text-gray-400">
               {quickLinks.map(({ to, label }) => (
                 <li key={to}>
@@ -75,6 +113,7 @@ const Footer = () => {
                       className="text-[10px] text-orange-500 opacity-0 -translate-x-2 transition-all duration-300
                                  group-hover:opacity-100 group-hover:translate-x-0"
                     />
+
                     <span className="relative">
                       {label}
                       <span className="absolute left-0 -bottom-0.5 h-px w-0 bg-orange-500 transition-all duration-300 group-hover:w-full" />
@@ -85,7 +124,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* ================= GOOGLE MAP ================= */}
+          {/* ================= GOOGLE MAP + CONTACT ================= */}
           <div>
             <h4 className="text-lg font-bold mb-6 relative inline-block">
               Our Location
@@ -120,6 +159,19 @@ const Footer = () => {
                 <FaArrowRight className="text-xs" />
               </span>
             </a>
+
+            {/* Address + email, directly under the map */}
+            <ul className="mt-5 space-y-3 text-gray-400 text-sm">
+              <li className="flex items-start gap-3">
+                <FaMapMarkerAlt className="mt-1 text-orange-500 shrink-0" />
+
+                <span className="leading-relaxed">
+                  {CONTACT_ADDRESS}
+                </span>
+              </li>
+
+              
+            </ul>
           </div>
         </div>
 
@@ -128,16 +180,24 @@ const Footer = () => {
           <p>
             © {new Date().getFullYear()} Monark Foundation. All rights reserved.
           </p>
+
           <div className="flex gap-6">
             <Link
               to="/privacy"
-              className="relative transition-colors duration-300 hover:text-orange-500 after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-orange-500 after:transition-all after:duration-300 hover:after:w-full"
+              className="relative transition-colors duration-300 hover:text-orange-500
+                         after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0
+                         after:bg-orange-500 after:transition-all after:duration-300
+                         hover:after:w-full"
             >
               Privacy Policy
             </Link>
+
             <Link
               to="/terms"
-              className="relative transition-colors duration-300 hover:text-orange-500 after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-orange-500 after:transition-all after:duration-300 hover:after:w-full"
+              className="relative transition-colors duration-300 hover:text-orange-500
+                         after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0
+                         after:bg-orange-500 after:transition-all after:duration-300
+                         hover:after:w-full"
             >
               Terms of Use
             </Link>
