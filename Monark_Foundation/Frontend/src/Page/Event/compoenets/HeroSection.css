@@ -1,0 +1,42 @@
+/* Slow, subtle zoom on the hero background image/video — gives the
+   section a more premium, "alive" feel instead of a static banner. */
+@keyframes kenburns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.12);
+  }
+}
+
+.hero-kenburns {
+  animation: kenburns 18s ease-in-out infinite alternate;
+}
+
+/* Extra radial depth in the corners so the edges of the hero always stay
+   readable regardless of how bright the underlying photo/video is. */
+.hero-vignette {
+  background: radial-gradient(
+    120% 90% at 50% 30%,
+    transparent 40%,
+    rgba(15, 8, 4, 0.55) 100%
+  );
+}
+
+/* Instagram-story-style progress bar for the slide indicator — fills over
+   the same duration as SLIDE_INTERVAL so the person can see time passing
+   before the hero auto-advances. */
+@keyframes storyFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.story-fill {
+  animation-name: storyFill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
